@@ -126,8 +126,8 @@ export function TabCompare({ templates, elements }: Props) {
         </div>
 
         <div className="p-4 bg-slate-50 dark:bg-slate-950/50 space-y-4">
-          <div className="flex flex-col lg:flex-row gap-3">
-            <div className="flex-1 relative group">
+          <div className="flex flex-col xl:flex-row gap-4">
+            <div className="flex-1 relative group min-w-0">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" />
               <input
                 type="text"
@@ -138,39 +138,39 @@ export function TabCompare({ templates, elements }: Props) {
               />
             </div>
             
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/50 rounded-lg p-1 shadow-sm h-full">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/50 rounded-lg p-1 shadow-sm w-full lg:w-auto">
                 <select 
                   value={filterXadd} 
                   onChange={e => setFilterXadd(e.target.value)} 
-                  className="bg-transparent text-[11px] px-3 py-1.5 focus:outline-none text-slate-700 dark:text-slate-200 font-bold uppercase tracking-tight cursor-pointer"
+                  className="bg-transparent text-[11px] px-3 py-2 focus:outline-none text-slate-700 dark:text-slate-200 font-bold uppercase tracking-tight cursor-pointer border-r border-slate-100 dark:border-slate-800 lg:border-r-0"
                 >
                   <option value="">All XADDs</option>
                   {uniqueXadds.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
-                <div className="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+                <div className="hidden lg:block w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
                 <select 
                   value={filterCategory} 
                   onChange={e => setFilterCategory(e.target.value)} 
-                  className="bg-transparent text-[11px] px-3 py-1.5 focus:outline-none text-slate-700 dark:text-slate-200 font-bold uppercase tracking-tight cursor-pointer"
+                  className="bg-transparent text-[11px] px-3 py-2 focus:outline-none text-slate-700 dark:text-slate-200 font-bold uppercase tracking-tight cursor-pointer sm:border-r border-slate-100 dark:border-slate-800 lg:border-r-0"
                 >
                   <option value="">Any Category</option>
                   {uniqueCategories.map((cat: any) => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
-                <div className="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+                <div className="hidden lg:block w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
                 <select 
                   value={filterType} 
                   onChange={e => setFilterType(e.target.value)} 
-                  className="bg-transparent text-[11px] px-3 py-1.5 focus:outline-none text-slate-700 dark:text-slate-200 font-bold uppercase tracking-tight cursor-pointer"
+                  className="bg-transparent text-[11px] px-3 py-2 focus:outline-none text-slate-700 dark:text-slate-200 font-bold uppercase tracking-tight cursor-pointer border-r border-slate-100 dark:border-slate-800 lg:border-r-0"
                 >
                   <option value="">Any Type</option>
                   {uniqueTypes.map((cat: any) => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
-                <div className="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+                <div className="hidden lg:block w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
                 <select 
                   value={filterCompany} 
                   onChange={e => setFilterCompany(e.target.value)} 
-                  className="bg-transparent text-[11px] px-3 py-1.5 focus:outline-none text-slate-700 dark:text-slate-300 font-bold uppercase tracking-tight cursor-pointer"
+                  className="bg-transparent text-[11px] px-3 py-2 focus:outline-none text-slate-700 dark:text-slate-300 font-bold uppercase tracking-tight cursor-pointer"
                 >
                   <option value="">Any Company</option>
                   {uniqueCompanies.map((sub: any) => <option key={sub} value={sub}>{sub}</option>)}
@@ -185,7 +185,7 @@ export function TabCompare({ templates, elements }: Props) {
                   setFilterCompany('');
                   setSearchQuery('');
                 }}
-                className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors ml-auto sm:ml-0"
               >
                 Reset
               </button>
@@ -259,32 +259,40 @@ export function TabCompare({ templates, elements }: Props) {
           </div>
         ) : (comparisonResults && selectedTemplate) ? (
           <div className="space-y-6 animate-in slide-in-from-bottom-8 duration-700">
-            <div className="flex flex-col md:flex-row md:items-end justify-between border-b pb-6 border-slate-200 dark:border-slate-800 gap-6">
-              <div className="space-y-1">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between border-b pb-6 border-slate-200 dark:border-slate-800 gap-6">
+              <div className="space-y-4 flex-1">
+                <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter">Analysis Results</h1>
                   {comparisonResults.overallWinners.length > 0 && (
-                    <div className="w-fit flex items-center gap-2 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest border border-emerald-200 dark:border-emerald-800 shadow-sm">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest border border-emerald-200 dark:border-emerald-800 shadow-sm">
                       <Trophy className="w-3.5 h-3.5 sm:w-4 h-4 fill-current" />
                       Win Identified
                     </div>
                   )}
                 </div>
-                <div className="text-slate-500 dark:text-slate-400 font-bold uppercase text-[9px] sm:text-[10px] tracking-[0.2em] flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
-                  Evaluation Perspective:
-                  <select 
-                    className="bg-transparent border-b-2 border-indigo-500 font-black text-slate-900 dark:text-slate-100 focus:outline-none ml-1 max-w-[150px] sm:max-w-none"
-                    value={selectedTemplateId}
-                    onChange={e => setSelectedTemplateId(e.target.value)}
-                  >
-                    {templates.map(t => <option key={t.id} value={t.id} className="text-slate-900">{t.name}</option>)}
-                  </select>
+                
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                   <span className="text-slate-500 dark:text-slate-400 font-bold uppercase text-[9px] sm:text-[10px] tracking-[0.2em] whitespace-nowrap">
+                    Evaluation Perspective:
+                  </span>
+                  <div className="relative inline-block w-full sm:w-auto">
+                    <select 
+                      className="w-full sm:w-auto bg-slate-100 dark:bg-slate-800 border-b-2 border-indigo-500 font-black text-slate-900 dark:text-slate-100 focus:outline-none px-2 py-1 text-xs sm:text-sm uppercase tracking-tight rounded-t shadow-sm appearance-none cursor-pointer pr-8"
+                      value={selectedTemplateId}
+                      onChange={e => setSelectedTemplateId(e.target.value)}
+                    >
+                      {templates.map(t => <option key={t.id} value={t.id} className="text-slate-900">{t.name}</option>)}
+                    </select>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                      <Search className="w-3 h-3" />
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-start xl:justify-end xl:max-w-xs">
                 {selectedTemplate.criteria.map(c => (
-                  <span key={c} className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[9px] sm:text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 rounded-lg shadow-sm">
+                  <span key={c} className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[9px] sm:text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 rounded-lg shadow-sm whitespace-nowrap">
                     {c}
                   </span>
                 ))}

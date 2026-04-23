@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Settings, Plus, Trash2, Save, Edit2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Settings, Plus, Trash2, Save, Edit2, Sparkles } from 'lucide-react';
 import { XaddTemplate } from '../types';
+import { SuggestionInput } from './SuggestionInput';
 
 interface Props {
   templates: XaddTemplate[];
@@ -14,10 +15,26 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
   const [criteriaInput, setCriteriaInput] = useState('');
   const [criteria, setCriteria] = useState<string[]>([]);
 
-  const handleAddCriteria = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (criteriaInput.trim() && !criteria.includes(criteriaInput.trim())) {
-      setCriteria([...criteria, criteriaInput.trim()]);
+  const allUniqueCriteria = useMemo(() => {
+    const set = new Set<string>();
+    templates.forEach(t => t.criteria.forEach(c => set.add(c)));
+    return Array.from(set).sort();
+  }, [templates]);
+
+  // Logic for "Most Frequent" criteria to help organization
+  const popularCriteria = useMemo(() => {
+    const counts: Record<string, number> = {};
+    templates.forEach(t => t.criteria.forEach(c => counts[c] = (counts[c] || 0) + 1));
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(entry => entry[0]);
+  }, [templates]);
+
+  const handleAddCriteria = (val?: string) => {
+    const target = (val || criteriaInput).trim().toUpperCase();
+    if (target && !criteria.includes(target)) {
+      setCriteria([...criteria, target]);
       setCriteriaInput('');
     }
   };
@@ -44,17 +61,35 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
         </h2>
         
         <div className="space-y-6">
-          <div>
-            <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-2">
-              Xadd Label Name
-            </label>
-            <input
-              type="text"
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-slate-800 dark:text-slate-100"
-              placeholder="e.g., GAME, APP, MOVIE..."
-              value={name}
-              onChange={(e) => setName(e.target.value.toUpperCase())}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-2">
+                Xadd Label Name
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-slate-800 dark:text-slate-100"
+                placeholder="e.g., GAME, APP, MOVIE..."
+                value={name}
+                onChange={(e) => setName(e.target.value.toUpperCase())}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-2">
+                Clone Criteria From
+              </label>
+              <select
+                onChange={(e) => {
+                  const t = templates.find(temp => temp.id === e.target.value);
+                  if (t) setCriteria([...t.criteria]);
+                }}
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold text-xs uppercase text-slate-500 dark:text-slate-400 cursor-pointer appearance-none"
+                defaultValue=""
+              >
+                <option value="" disabled>-- Pick a workspace --</option>
+                {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            </div>
           </div>
 
           <div>
@@ -62,28 +97,44 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
               Criteria Inputs
             </label>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-              <input
-                type="text"
-                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium"
-                placeholder="e.g., GRAPHIC, SIZE, PRICE..."
+              <SuggestionInput
                 value={criteriaInput}
-                onChange={(e) => setCriteriaInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddCriteria();
-                  }
-                }}
+                onChange={setCriteriaInput}
+                suggestions={allUniqueCriteria}
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium"
+                placeholder="e.g., GRAPHIC, SIZE, PRICE..."
               />
               <button
                 type="button"
-                onClick={handleAddCriteria}
+                onClick={() => handleAddCriteria()}
                 className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 font-bold shadow-sm"
               >
                 <Plus className="w-5 h-5" />
-                Add Criteria
+                Add
               </button>
             </div>
+
+            {/* Smart Organization Helper */}
+            {popularCriteria.length > 0 && (
+              <div className="mt-4 p-4 bg-indigo-50/30 dark:bg-slate-950/50 border border-indigo-100 dark:border-indigo-900/30 rounded-lg">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                  <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-widest">Global Suggestions</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {popularCriteria.map(pc => (
+                    <button
+                      key={pc}
+                      type="button"
+                      onClick={() => handleAddCriteria(pc)}
+                      className="px-2 py-1 bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 text-[10px] font-black uppercase text-slate-600 dark:text-indigo-300 hover:border-indigo-500 hover:text-indigo-600 transition-all shadow-sm"
+                    >
+                      + {pc}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {criteria.length > 0 && (
               <ul className="mt-6 flex flex-wrap gap-2">
@@ -126,7 +177,9 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
                 key={t.id} 
                 t={t} 
                 deleteTemplate={deleteTemplate} 
-                updateTemplate={updateTemplate} 
+                updateTemplate={updateTemplate}
+                allUniqueCriteria={allUniqueCriteria}
+                popularCriteria={popularCriteria}
               />
             ))}
           </div>
@@ -141,9 +194,11 @@ interface TemplateRowProps {
   t: XaddTemplate;
   deleteTemplate: (id: string) => void;
   updateTemplate: (id: string, updates: Partial<Omit<XaddTemplate, 'id' | 'userId' | 'createdAt'>>) => void;
+  allUniqueCriteria: string[];
+  popularCriteria: string[];
 }
 
-function TemplateRow({ t, deleteTemplate, updateTemplate }: TemplateRowProps) {
+function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, popularCriteria }: TemplateRowProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [localName, setLocalName] = useState(t.name);
   const [localCriteria, setLocalCriteria] = useState(t.criteria);
@@ -156,10 +211,10 @@ function TemplateRow({ t, deleteTemplate, updateTemplate }: TemplateRowProps) {
     setIsEditing(false);
   };
 
-  const addCriteria = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (newCriteria.trim() && !localCriteria.includes(newCriteria.trim().toUpperCase())) {
-      setLocalCriteria([...localCriteria, newCriteria.trim().toUpperCase()]);
+  const addCriteria = (val?: string) => {
+    const target = (val || newCriteria).trim().toUpperCase();
+    if (target && !localCriteria.includes(target)) {
+      setLocalCriteria([...localCriteria, target]);
       setNewCriteria('');
     }
   };
@@ -177,16 +232,28 @@ function TemplateRow({ t, deleteTemplate, updateTemplate }: TemplateRowProps) {
         
         <div className="w-full space-y-2">
           <div className="flex gap-2">
-            <input
-              type="text"
-              className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-indigo-500 text-sm font-medium text-slate-900 dark:text-white"
+            <SuggestionInput
               value={newCriteria}
-              onChange={(e) => setNewCriteria(e.target.value)}
+              onChange={setNewCriteria}
+              suggestions={allUniqueCriteria}
+              className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-indigo-500 text-sm font-medium text-slate-900 dark:text-white"
               placeholder="New criteria..."
-              onKeyDown={(e) => e.key === 'Enter' && addCriteria()}
             />
-            <button onClick={addCriteria} className="px-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-bold">Add</button>
+            <button onClick={() => addCriteria()} className="px-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-bold">Add</button>
           </div>
+          
+          <div className="flex flex-wrap gap-1 mt-1">
+             {popularCriteria.slice(0, 5).map(pc => (
+               <button
+                 key={pc}
+                 onClick={() => addCriteria(pc)}
+                 className="text-[8px] font-black uppercase text-indigo-400 hover:text-indigo-600 px-1"
+               >
+                 + {pc}
+               </button>
+             ))}
+          </div>
+
           <div className="flex flex-wrap gap-2">
             {localCriteria.map((c, i) => (
               <span key={i} className="flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 text-[10px] uppercase font-black tracking-widest border border-indigo-200 dark:border-indigo-800">
