@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "Template": {
+      "title": "Template",
+      "description": "Customizable categorization templates (xadds) containing multiple rating criteria.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the template (e.g., GAME, APP)"
+        },
+        "criteria": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of strings defining the traits that can be rated."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who created it."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["name", "criteria", "userId", "createdAt"]
+    },
+    "Element": {
+      "title": "Element",
+      "description": "The actual items/elements being rated under a specific template.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the element (e.g., The Sims 4)"
+        },
+        "type": {
+           "type": "string",
+           "description": "Optional type"
+        },
+        "company": {
+           "type": "string",
+           "description": "Optional company"
+        },
+        "category": {
+           "type": "string",
+           "description": "Optional category"
+        },
+        "templateId": {
+          "type": "string",
+          "description": "ID of the assigned template. Null/empty if uncategorized."
+        },
+        "templateName": {
+          "type": "string",
+          "description": "Label of the assigned template."
+        },
+        "ratings": {
+          "type": "object",
+          "description": "Map of criteria string to integer rating 1-20."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who owns it."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["name", "userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/templates/{templateId}": {
+      "schema": { "$ref": "#/entities/Template" },
+      "description": "Templates specific to a user."
+    },
+    "/users/{userId}/elements/{elementId}": {
+      "schema": { "$ref": "#/entities/Element" },
+      "description": "Elements specific to a user."
+    }
+  }
+}

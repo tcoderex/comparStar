@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    match /users/{userId} {
+      match /templates/{templateId} {
+        function isValidTemplate(data) {
+          return data.keys().hasAll(['name', 'criteria', 'userId', 'createdAt'])
+            && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+            && data.criteria is list && data.criteria.size() <= 20
+            && (data.criteria.size() == 0 || data.criteria[0] is string)
+            && data.userId == request.auth.uid
+            && data.userId == userId;
+        }
+
+        allow read: if isSignedIn() && request.auth.uid == userId;
+        
+        allow create: if isSignedIn() 
+          && request.auth.uid == userId
+          && isValidId(templateId)
+          && isValidTemplate(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+          
+        allow update: if isSignedIn() 
+          && request.auth.uid == userId
+          && isValidId(templateId)
+          && isValidTemplate(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'criteria'])
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.userId == resource.data.userId;
+
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(templateId);
+      }
+
+      match /elements/{elementId} {
+        function isValidElement(data) {
+          return data.keys().hasAll(['name', 'ratings', 'userId', 'createdAt'])
+            && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+            && data.userId == request.auth.uid
+            && data.userId == userId
+            && data.ratings is map
+            && data.get('templateId', '') is string
+            && (data.get('templateName', null) == null || (data.templateName is string && data.templateName.size() <= 100))
+            && (data.get('category', null) == null || (data.category is string && data.category.size() <= 100))
+            && (data.get('type', null) == null || (data.type is string && data.type.size() <= 100))
+            && (data.get('company', null) == null || (data.company is string && data.company.size() <= 100));
+        }
+
+        // list and get are implicitly covered by read
+        allow read: if isSignedIn() && request.auth.uid == userId;
+
+        allow create: if isSignedIn()
+          && request.auth.uid == userId
+          && isValidId(elementId)
+          && isValidElement(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+          
+        allow update: if isSignedIn()
+          && request.auth.uid == userId
+          && isValidId(elementId)
+          && isValidElement(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'templateId', 'templateName', 'ratings', 'type', 'company', 'category'])
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.userId == resource.data.userId;
+
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(elementId);
+      }
+    }
+  }
+}
