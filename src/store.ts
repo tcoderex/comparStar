@@ -61,14 +61,10 @@ export function useAppStore() {
   useEffect(() => {
     const unsubAuth = auth.onAuthStateChanged((u) => {
       setUser(u);
-      if (!u) {
-        // Clear state on logout to prevent stale data
-        setState({ templates: [], elements: [], theme: state.theme });
-      }
       setLoading(false);
     });
     return () => unsubAuth();
-  }, [state.theme]);
+  }, []);
 
   useEffect(() => {
     if (!user) return;

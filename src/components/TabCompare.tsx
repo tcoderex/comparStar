@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function TabCompare({ templates, elements }: Props) {
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(templates[0]?.id || '');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [selectedElementIds, setSelectedElementIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSubcategory, setFilterSubcategory] = useState<string>('');
@@ -17,14 +17,14 @@ export function TabCompare({ templates, elements }: Props) {
   const [filterXadd, setFilterXadd] = useState<string>('');
 
   // Sync criteria with filterXadd if filterXadd is specifically chosen
-  useMemo(() => {
+  React.useEffect(() => {
     if (filterXadd) {
       setSelectedTemplateId(filterXadd);
     }
   }, [filterXadd]);
 
   // If no criteria selected but elements are, try to find a relevant criteria set
-  useMemo(() => {
+  React.useEffect(() => {
     if (!selectedTemplateId && selectedElementIds.length > 0) {
       const firstEl = elements.find(el => el.id === selectedElementIds[0]);
       if (firstEl?.templateId) {
@@ -53,7 +53,17 @@ export function TabCompare({ templates, elements }: Props) {
     if (selectedElementIds.includes(id)) {
       setSelectedElementIds(prev => prev.filter(eId => eId !== id));
     } else {
-      setSelectedElementIds(prev => [...prev, id]);
+      setSelectedElementIds(prev => {
+        const next = [...prev, id];
+        // If we just added the first element, try to set the perspective automatically
+        if (next.length === 1) {
+          const el = elements.find(e => e.id === id);
+          if (el && el.templateId) {
+            setSelectedTemplateId(el.templateId);
+          }
+        }
+        return next;
+      });
     }
   };
 
