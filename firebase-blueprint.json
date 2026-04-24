@@ -1,5 +1,24 @@
 {
   "entities": {
+    "Settings": {
+      "title": "Settings",
+      "description": "User specific app settings",
+      "type": "object",
+      "properties": {
+        "customSuggestions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "customCategories": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "customSubcategories": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
     "Template": {
       "title": "Template",
       "description": "Customizable categorization templates (xadds) containing multiple rating criteria.",
@@ -34,9 +53,9 @@
           "type": "string",
           "description": "Name of the element (e.g., The Sims 4)"
         },
-        "type": {
+        "subcategory": {
            "type": "string",
-           "description": "Optional type"
+           "description": "Optional subcategory"
         },
         "company": {
            "type": "string",
@@ -78,6 +97,10 @@
     "/users/{userId}/elements/{elementId}": {
       "schema": { "$ref": "#/entities/Element" },
       "description": "Elements specific to a user."
+    },
+    "/users/{userId}/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/Settings" },
+      "description": "Settings specific to a user."
     }
   }
 }

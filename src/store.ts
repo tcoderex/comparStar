@@ -6,13 +6,32 @@ import { handleFirestoreError } from './firebase-errors';
 
 const STORAGE_KEY = 'star-compare-local-v2';
 
+const DEFAULT_SUGGESTIONS = ['CONTROL', 'QUALITY', 'PRICE', 'HEALTH', 'BENEFIT', 'UPDATE', 'SPEED', 'DESIGN', 'SIZE', 'VALUE'];
+const DEFAULT_CATEGORIES = ['GAME', 'APPLICATION', 'TECH', 'FOOD', 'SERVICE', 'PERSON'];
+const DEFAULT_SUBCATEGORIES = ['LOGIC', 'VISUAL', 'AUDIO', 'FEEL', 'COST'];
+
 export function useAppStore() {
   const [state, setState] = useState<AppState>(() => {
     try {
       const cached = localStorage.getItem(STORAGE_KEY);
-      return cached ? JSON.parse(cached) : { templates: [], elements: [], theme: 'system' };
+      const data = cached ? JSON.parse(cached) : {};
+      return {
+        templates: data.templates || [],
+        elements: data.elements || [],
+        theme: data.theme || 'system',
+        customSuggestions: data.customSuggestions || DEFAULT_SUGGESTIONS,
+        customCategories: data.customCategories || DEFAULT_CATEGORIES,
+        customSubcategories: data.customSubcategories || DEFAULT_SUBCATEGORIES
+      };
     } catch {
-      return { templates: [], elements: [], theme: 'system' };
+      return { 
+        templates: [], 
+        elements: [], 
+        theme: 'system',
+        customSuggestions: DEFAULT_SUGGESTIONS,
+        customCategories: DEFAULT_CATEGORIES,
+        customSubcategories: DEFAULT_SUBCATEGORIES
+      };
     }
   });
 
@@ -78,11 +97,37 @@ export function useAppStore() {
       setState(prev => ({ ...prev, elements }));
     }, (err) => handleFirestoreError(err, 'list', `users/${user.uid}/elements`));
 
+    const unsubSettings = onSnapshot(doc(db, 'users', user.uid, 'settings', 'general'), (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setState(prev => ({
+          ...prev,
+          customSuggestions: data.customSuggestions || DEFAULT_SUGGESTIONS,
+          customCategories: data.customCategories || DEFAULT_CATEGORIES,
+          customSubcategories: data.customSubcategories || DEFAULT_SUBCATEGORIES
+        }));
+      }
+    });
+
     return () => {
       unsubTemplates();
       unsubElements();
+      unsubSettings();
     };
   }, [user]);
+
+  const updateSettings = async (updates: { customSuggestions?: string[]; customCategories?: string[]; customSubcategories?: string[] }) => {
+    setState(prev => ({ ...prev, ...updates }));
+
+    if (user) {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'general');
+      try {
+        await setDoc(docRef, updates, { merge: true });
+      } catch (e: any) {
+        handleFirestoreError(e, 'update', docRef.path);
+      }
+    }
+  };
 
   const addTemplate = async (template: Omit<XaddTemplate, 'id'>) => {
     const id = crypto.randomUUID();
@@ -288,7 +333,8 @@ export function useAppStore() {
     updateElementTemplate,
     updateElementRatings,
     bulkDelete,
-    deleteMetadata
+    deleteMetadata,
+    updateSettings
   };
 }
 

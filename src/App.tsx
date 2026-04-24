@@ -126,6 +126,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto h-full">
           {activeTab === 'elements' && (
             <TabElements
+              store={store}
               elements={store.state.elements}
               templates={store.state.templates}
               addElement={store.addElement}
@@ -145,6 +146,7 @@ export default function App() {
           
           {activeTab === 'templates' && (
             <TabTemplates
+              store={store}
               templates={store.state.templates}
               addTemplate={store.addTemplate}
               updateTemplate={store.updateTemplate}
@@ -153,7 +155,7 @@ export default function App() {
           )}
 
           {activeTab === 'settings' && (
-            <TabSettings />
+            <TabSettings store={store} />
           )}
         </div>
       </main>

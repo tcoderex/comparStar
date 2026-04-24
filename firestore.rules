@@ -45,6 +45,29 @@ service cloud.firestore {
         allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(templateId);
       }
 
+      match /settings/{settingId} {
+        function isValidSettings(data) {
+          return (data.get('customSuggestions', null) == null || (data.customSuggestions is list && data.customSuggestions.size() <= 100 && (data.customSuggestions.size() == 0 || data.customSuggestions[0] is string)))
+            && (data.get('customCategories', null) == null || (data.customCategories is list && data.customCategories.size() <= 100 && (data.customCategories.size() == 0 || data.customCategories[0] is string)))
+            && (data.get('customSubcategories', null) == null || (data.customSubcategories is list && data.customSubcategories.size() <= 100 && (data.customSubcategories.size() == 0 || data.customSubcategories[0] is string)));
+        }
+
+        allow read: if isSignedIn() && request.auth.uid == userId;
+        
+        allow create: if isSignedIn() 
+          && request.auth.uid == userId
+          && isValidId(settingId)
+          && isValidSettings(request.resource.data);
+          
+        allow update: if isSignedIn() 
+          && request.auth.uid == userId
+          && isValidId(settingId)
+          && isValidSettings(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['customSuggestions', 'customCategories', 'customSubcategories']);
+
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(settingId);
+      }
+
       match /elements/{elementId} {
         function isValidElement(data) {
           return data.keys().hasAll(['name', 'ratings', 'userId', 'createdAt'])
@@ -55,7 +78,7 @@ service cloud.firestore {
             && data.get('templateId', '') is string
             && (data.get('templateName', null) == null || (data.templateName is string && data.templateName.size() <= 100))
             && (data.get('category', null) == null || (data.category is string && data.category.size() <= 100))
-            && (data.get('type', null) == null || (data.type is string && data.type.size() <= 100))
+            && (data.get('subcategory', null) == null || (data.subcategory is string && data.subcategory.size() <= 100))
             && (data.get('company', null) == null || (data.company is string && data.company.size() <= 100));
         }
 
@@ -72,7 +95,7 @@ service cloud.firestore {
           && request.auth.uid == userId
           && isValidId(elementId)
           && isValidElement(request.resource.data)
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'templateId', 'templateName', 'ratings', 'type', 'company', 'category'])
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'templateId', 'templateName', 'ratings', 'subcategory', 'company', 'category'])
           && request.resource.data.createdAt == resource.data.createdAt
           && request.resource.data.userId == resource.data.userId;
 

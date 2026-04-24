@@ -1,11 +1,33 @@
-import React, { useState, useMemo } from 'react';
-import { useAppStore } from '../store';
-import { LogIn, LogOut, CheckSquare, Trash2, Shield, Moon, Sun, Monitor, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { LogIn, LogOut, CheckSquare, Trash2, Shield, Moon, Sun, Monitor, AlertTriangle, Plus, Save, Sparkles, Hash, Edit2 } from 'lucide-react';
 import { signInWithGoogle, signOut } from '../firebase';
 
-export function TabSettings() {
-  const store = useAppStore();
-  const [activeTab, setActiveTab] = useState<'sync' | 'manage'>('sync');
+export function TabSettings({ store }: { store: any }) {
+  const [activeTab, setActiveTab] = useState<'sync' | 'manage' | 'presets'>('sync');
+  
+  // State for new items
+  const [newSuggestion, setNewSuggestion] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+  const [newSubcategory, setNewSubcategory] = useState('');
+
+  const [suggestionError, setSuggestionError] = useState<string | null>(null);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [subcategoryError, setSubcategoryError] = useState<string | null>(null);
+
+  const [editingPreset, setEditingPreset] = useState<{ type: 'suggestion' | 'category' | 'subcategory', oldVal: string, newVal: string } | null>(null);
+
+  const [successMsg, setSuccessMsg] = useState<{ type: string, msg: string } | null>(null);
+  
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => setSuccessMsg(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMsg]);
+
+  const customSuggestions = store.state.customSuggestions || [];
+  const customCategories = store.state.customCategories || [];
+  const customSubcategories = store.state.customSubcategories || [];
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
   const [selectedTemplates, setSelectedTemplates] = useState<string[]>([]);
   const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([]);
@@ -115,6 +137,14 @@ export function TabSettings() {
           }`}
         >
           Data Manager
+        </button>
+        <button
+          onClick={() => setActiveTab('presets')}
+          className={`px-4 py-3 font-bold border-b-2 transition-colors ${
+            activeTab === 'presets' ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+          }`}
+        >
+          Quick Presets
         </button>
       </div>
 
@@ -270,7 +300,7 @@ export function TabSettings() {
                           )}
                         </div>
                       </div>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                      <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex gap-1">
                         <button 
                           onClick={() => {
                             if (confirm('Delete this element?')) store.deleteElement(el.id);
@@ -340,7 +370,7 @@ export function TabSettings() {
                         className="w-4 h-4 text-indigo-600 border-slate-300 dark:border-slate-600 rounded focus:ring-indigo-500 bg-white dark:bg-slate-800 cursor-pointer"
                       />
                       <span className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate flex-1">{t.name}</span>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                      <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex gap-1">
                         <button 
                           onClick={() => {
                             if (confirm('Delete this template?')) store.deleteTemplate(t.id);
@@ -447,6 +477,278 @@ export function TabSettings() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'presets' && (
+        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            {/* Global Suggestions */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col h-[600px]">
+              <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-4 h-4 text-indigo-500" />
+                  <h3 className="font-black text-slate-800 dark:text-slate-100 tracking-tight">Global Criteria</h3>
+                </div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Suggestions for templates</p>
+              </div>
+              
+              <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  setSuggestionError(null);
+                  const val = newSuggestion.trim().toUpperCase();
+                  if (val) {
+                    if (customSuggestions.includes(val)) {
+                      setSuggestionError('Criteria already exists in presets.');
+                    } else {
+                      store.updateSettings({ customSuggestions: [...customSuggestions, val] });
+                      setNewSuggestion('');
+                      setSuccessMsg({ type: 'suggestion', msg: 'Criteria added!' });
+                    }
+                  }
+                }} className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newSuggestion}
+                      onChange={(e) => setNewSuggestion(e.target.value)}
+                      placeholder="NEW CRITERIA..."
+                      className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    />
+                    <button type="submit" className="p-2 bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {suggestionError && <p className="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1 animate-pulse"><AlertTriangle className="w-3 h-3" /> {suggestionError}</p>}
+                  {successMsg?.type === 'suggestion' && <p className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1"><CheckSquare className="w-3 h-3" /> {successMsg.msg}</p>}
+                </form>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 flex flex-wrap gap-2 content-start custom-scrollbar">
+                {customSuggestions.map(s => (
+                  <div key={s} className="group flex items-center gap-2 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-tight">
+                    {editingPreset?.type === 'suggestion' && editingPreset.oldVal === s ? (
+                      <div className="flex items-center gap-1">
+                        <input 
+                          autoFocus
+                          className="w-24 bg-white dark:bg-slate-950 border border-indigo-500 focus:outline-none text-[10px] px-1"
+                          value={editingPreset.newVal}
+                          onChange={(e) => setEditingPreset({ ...editingPreset, newVal: e.target.value.toUpperCase() })}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const updated = customSuggestions.map(i => i === s ? editingPreset.newVal.trim() : i);
+                              store.updateSettings({ customSuggestions: updated });
+                              setEditingPreset(null);
+                            }
+                            if (e.key === 'Escape') setEditingPreset(null);
+                          }}
+                        />
+                        <button onClick={() => {
+                          const updated = customSuggestions.map(i => i === s ? editingPreset.newVal.trim() : i);
+                          store.updateSettings({ customSuggestions: updated });
+                          setEditingPreset(null);
+                        }} className="text-emerald-600"><Plus className="w-3 h-3" /></button>
+                      </div>
+                    ) : (
+                      <>
+                        {s}
+                        <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setEditingPreset({ type: 'suggestion', oldVal: s, newVal: s })} className="hover:text-indigo-950 dark:hover:text-white">
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                          <button 
+                            onClick={() => store.updateSettings({ customSuggestions: customSuggestions.filter(i => i !== s) })}
+                            className="hover:text-red-500"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Categories */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col h-[600px]">
+              <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 bg-amber-500 rounded-sm"></div>
+                  <h3 className="font-black text-slate-800 dark:text-slate-100 tracking-tight">Quick Categories</h3>
+                </div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Suggestions for elements</p>
+              </div>
+              
+              <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  setCategoryError(null);
+                  const val = newCategory.trim().toUpperCase();
+                  if (val) {
+                    if (customCategories.includes(val)) {
+                      setCategoryError('Category already exists in presets.');
+                    } else {
+                      store.updateSettings({ customCategories: [...customCategories, val] });
+                      setNewCategory('');
+                      setSuccessMsg({ type: 'category', msg: 'Category added!' });
+                    }
+                  }
+                }} className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder="NEW CATEGORY..."
+                      className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                    <button type="submit" className="p-2 bg-amber-600 text-white hover:bg-amber-700 transition">
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {categoryError && <p className="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1 animate-pulse"><AlertTriangle className="w-3 h-3" /> {categoryError}</p>}
+                  {successMsg?.type === 'category' && <p className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1"><CheckSquare className="w-3 h-3" /> {successMsg.msg}</p>}
+                </form>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 flex flex-wrap gap-2 content-start custom-scrollbar">
+                {customCategories.map(s => (
+                  <div key={s} className="group flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-tight">
+                    {editingPreset?.type === 'category' && editingPreset.oldVal === s ? (
+                      <div className="flex items-center gap-1">
+                        <input 
+                          autoFocus
+                          className="w-24 bg-white dark:bg-slate-950 border border-amber-500 focus:outline-none text-[10px] px-1"
+                          value={editingPreset.newVal}
+                          onChange={(e) => setEditingPreset({ ...editingPreset, newVal: e.target.value.toUpperCase() })}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const updated = customCategories.map(i => i === s ? editingPreset.newVal.trim() : i);
+                              store.updateSettings({ customCategories: updated });
+                              setEditingPreset(null);
+                            }
+                            if (e.key === 'Escape') setEditingPreset(null);
+                          }}
+                        />
+                        <button onClick={() => {
+                          const updated = customCategories.map(i => i === s ? editingPreset.newVal.trim() : i);
+                          store.updateSettings({ customCategories: updated });
+                          setEditingPreset(null);
+                        }} className="text-emerald-600"><Plus className="w-3 h-3" /></button>
+                      </div>
+                    ) : (
+                      <>
+                        {s}
+                        <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setEditingPreset({ type: 'category', oldVal: s, newVal: s })} className="hover:text-amber-950 dark:hover:text-white">
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                          <button 
+                            onClick={() => store.updateSettings({ customCategories: customCategories.filter(i => i !== s) })}
+                            className="hover:text-red-500"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Subcategories */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col h-[600px]">
+              <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 bg-emerald-500 rounded-sm"></div>
+                  <h3 className="font-black text-slate-800 dark:text-slate-100 tracking-tight">Quick Subs</h3>
+                </div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Additional groupings</p>
+              </div>
+              
+              <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  setSubcategoryError(null);
+                  const val = newSubcategory.trim().toUpperCase();
+                  if (val) {
+                    if (customSubcategories.includes(val)) {
+                      setSubcategoryError('Subcategory already exists in presets.');
+                    } else {
+                      store.updateSettings({ customSubcategories: [...customSubcategories, val] });
+                      setNewSubcategory('');
+                      setSuccessMsg({ type: 'subcategory', msg: 'Subcategory added!' });
+                    }
+                  }
+                }} className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newSubcategory}
+                      onChange={(e) => setNewSubcategory(e.target.value)}
+                      placeholder="NEW SUBCATEGORY..."
+                      className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                    <button type="submit" className="p-2 bg-emerald-600 text-white hover:bg-emerald-700 transition">
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {subcategoryError && <p className="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1 animate-pulse"><AlertTriangle className="w-3 h-3" /> {subcategoryError}</p>}
+                  {successMsg?.type === 'subcategory' && <p className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1"><CheckSquare className="w-3 h-3" /> {successMsg.msg}</p>}
+                </form>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 flex flex-wrap gap-2 content-start custom-scrollbar">
+                {customSubcategories.map(s => (
+                  <div key={s} className="group flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-tight">
+                    {editingPreset?.type === 'subcategory' && editingPreset.oldVal === s ? (
+                      <div className="flex items-center gap-1">
+                        <input 
+                          autoFocus
+                          className="w-24 bg-white dark:bg-slate-950 border border-emerald-500 focus:outline-none text-[10px] px-1"
+                          value={editingPreset.newVal}
+                          onChange={(e) => setEditingPreset({ ...editingPreset, newVal: e.target.value.toUpperCase() })}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const updated = customSubcategories.map(i => i === s ? editingPreset.newVal.trim() : i);
+                              store.updateSettings({ customSubcategories: updated });
+                              setEditingPreset(null);
+                            }
+                            if (e.key === 'Escape') setEditingPreset(null);
+                          }}
+                        />
+                        <button onClick={() => {
+                          const updated = customSubcategories.map(i => i === s ? editingPreset.newVal.trim() : i);
+                          store.updateSettings({ customSubcategories: updated });
+                          setEditingPreset(null);
+                        }} className="text-emerald-600"><Plus className="w-3 h-3" /></button>
+                      </div>
+                    ) : (
+                      <>
+                        {s}
+                        <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setEditingPreset({ type: 'subcategory', oldVal: s, newVal: s })} className="hover:text-emerald-950 dark:hover:text-white">
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                          <button 
+                            onClick={() => store.updateSettings({ customSubcategories: customSubcategories.filter(i => i !== s) })}
+                            className="hover:text-red-500"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       )}

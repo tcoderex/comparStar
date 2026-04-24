@@ -2,8 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { List, Plus, Search, Edit2, Trash2, Star, Save, SortAsc, SortDesc } from 'lucide-react';
 import { ElementItem, XaddTemplate } from '../types';
 import { SuggestionInput } from './SuggestionInput';
+import { useAppStore } from '../store';
 
 interface Props {
+  store: any;
   elements: ElementItem[];
   templates: XaddTemplate[];
   addElement: (name: string, subcategory?: string, company?: string, category?: string) => void;
@@ -14,6 +16,7 @@ interface Props {
 }
 
 export function TabElements({
+  store,
   elements,
   templates,
   addElement,
@@ -30,17 +33,49 @@ export function TabElements({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'name' | 'ratingDesc' | 'ratingAsc'>('name');
 
-  const GLOBAL_CATEGORIES = ['GAME', 'APPLICATION', 'TECHNOLOGY', 'MUSIC', 'MOVIE', 'SPORT', 'FOOD', 'TRAVEL', 'FASHION', 'SCIENCE', 'EDUCATION'];
-  const GLOBAL_SUBCATEGORIES = ['SIMULATOR', 'FPS', 'RPG', 'STRATEGY', 'ACTION', 'PRODUCTIVITY', 'UTILITY', 'SOCIAL', 'ENTERTAINMENT', 'HARDWARE', 'SOFTWARE', 'SMARTPHONE', 'LAPTOP'];
+  const customCategories = store.state.customCategories;
+  const customSubcategories = store.state.customSubcategories;
 
-  const uniqueSubcategories = useMemo(() => Array.from(new Set([...GLOBAL_SUBCATEGORIES, ...elements.map(el => el.subcategory).filter(Boolean).map(t => t.toUpperCase())])), [elements]);
+  const uniqueSubcategories = useMemo(() => Array.from(new Set([...customSubcategories, ...elements.map(el => el.subcategory).filter(Boolean).map(t => t.toUpperCase())])), [elements, customSubcategories]);
   const uniqueCompanies = useMemo(() => Array.from(new Set(elements.map(el => el.company).filter(Boolean).map(c => c.toUpperCase()))), [elements]);
-  const uniqueCategoriesValues = useMemo(() => Array.from(new Set([...GLOBAL_CATEGORIES, ...elements.map(el => el.category).filter(Boolean).map(c => c.toUpperCase())])), [elements]);
+  const uniqueCategoriesValues = useMemo(() => Array.from(new Set([...customCategories, ...elements.map(el => el.category).filter(Boolean).map(c => c.toUpperCase())])), [elements, customCategories]);
+
+  const [error, setError] = useState<string | null>(null);
 
   const handleAdd = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (newName.trim()) {
-      addElement(newName.trim(), newSubcategory.trim(), newCompany.trim(), newCategory.trim());
+    setError(null);
+
+    const nameTrimmed = newName.trim();
+    if (nameTrimmed) {
+      const isDuplicate = elements.some(el => 
+        el.name.toLowerCase() === nameTrimmed.toLowerCase() &&
+        (el.category || '').toLowerCase() === (newCategory.trim().toLowerCase() || '') &&
+        (el.subcategory || '').toLowerCase() === (newSubcategory.trim().toLowerCase() || '') &&
+        (el.company || '').toLowerCase() === (newCompany.trim().toLowerCase() || '')
+      );
+
+      if (isDuplicate) {
+        setError('This element already exists with the same category/subcategory/company.');
+        return;
+      }
+
+      const catTrim = newCategory.trim().toUpperCase();
+      const subTrim = newSubcategory.trim().toUpperCase();
+
+      addElement(nameTrimmed, newSubcategory.trim(), newCompany.trim(), newCategory.trim());
+
+      const updates: any = {};
+      if (catTrim && !customCategories.includes(catTrim)) {
+        updates.customCategories = [...customCategories, catTrim];
+      }
+      if (subTrim && !customSubcategories.includes(subTrim)) {
+        updates.customSubcategories = [...customSubcategories, subTrim];
+      }
+      if (Object.keys(updates).length > 0) {
+        store.updateSettings(updates);
+      }
+
       setNewName('');
       setNewSubcategory('');
       setNewCompany('');
@@ -70,35 +105,41 @@ export function TabElements({
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider animate-in fade-in zoom-in duration-300">
+          {error}
+        </div>
+      )}
+
       <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
         <form onSubmit={handleAdd} className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           <input
             type="text"
-            className="px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-medium"
-            placeholder="Element Name..."
+            className="px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
+            placeholder="NAME (e.g. SIMS 4, IPHONE)"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
           <SuggestionInput
-            placeholder="Category..."
+            placeholder="CATEGORY (e.g. GAME)"
             value={newCategory}
             onChange={setNewCategory}
             suggestions={uniqueCategoriesValues}
-            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors"
+            className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
           />
           <SuggestionInput
-            placeholder="Subcategory..."
+            placeholder="SUBCATEGORY"
             value={newSubcategory}
             onChange={setNewSubcategory}
             suggestions={uniqueSubcategories}
-            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors"
+            className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
           />
           <SuggestionInput
-            placeholder="Company..."
+            placeholder="COMPANY (e.g. EA, APPLE)"
             value={newCompany}
             onChange={setNewCompany}
             suggestions={uniqueCompanies}
-            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors"
+            className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
           />
           <button
             type="submit"
@@ -110,6 +151,41 @@ export function TabElements({
           </button>
         </form>
       </div>
+
+      {(uniqueCategoriesValues.length > 0 || uniqueSubcategories.length > 0) && (
+        <div className="bg-slate-50/50 dark:bg-slate-900/30 p-4 border border-slate-200 dark:border-slate-800 rounded-lg">
+          <div className="flex flex-col gap-4">
+            {uniqueCategoriesValues.length > 0 && (
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest mr-2">Quick Category:</span>
+                {uniqueCategoriesValues.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setNewCategory(cat)}
+                    className="px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 transition-all shadow-sm"
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+            {uniqueSubcategories.length > 0 && (
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest mr-2">Quick Sub:</span>
+                {uniqueSubcategories.map(sub => (
+                  <button
+                    key={sub}
+                    onClick={() => setNewSubcategory(sub)}
+                    className="px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 hover:border-emerald-500 transition-all shadow-sm"
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-col sm:flex-row gap-4 justify-between items-center">
@@ -147,6 +223,7 @@ export function TabElements({
               <ElementRow
                 key={el.id}
                 item={el}
+                allElements={elements}
                 templates={templates}
                 isEditing={editingId === el.id}
                 setEditingId={setEditingId}
@@ -157,6 +234,7 @@ export function TabElements({
                 uniqueSubcategories={uniqueSubcategories}
                 uniqueCompanies={uniqueCompanies}
                 uniqueCategoriesValues={uniqueCategoriesValues}
+                store={store}
               />
             ))
           )}
@@ -169,6 +247,7 @@ export function TabElements({
 interface ElementRowProps {
   key?: string;
   item: ElementItem;
+  allElements: ElementItem[];
   templates: XaddTemplate[];
   isEditing: boolean;
   setEditingId: (id: string | null) => void;
@@ -179,10 +258,12 @@ interface ElementRowProps {
   uniqueSubcategories: string[];
   uniqueCompanies: string[];
   uniqueCategoriesValues: string[];
+  store: any;
 }
 
 function ElementRow({
   item,
+  allElements,
   templates,
   isEditing,
   setEditingId,
@@ -193,6 +274,7 @@ function ElementRow({
   uniqueSubcategories,
   uniqueCompanies,
   uniqueCategoriesValues,
+  store,
 }: ElementRowProps) {
   const [localName, setLocalName] = useState(item.name);
   const [localSubcategory, setLocalSubcategory] = useState(item.subcategory || '');
@@ -200,6 +282,7 @@ function ElementRow({
   const [localCategory, setLocalCategory] = useState(item.category || '');
   const [localRatings, setLocalRatings] = useState<Record<string, number>>(item.ratings);
   const [isRenaming, setIsRenaming] = useState(false);
+  const [renameError, setRenameError] = useState<string | null>(null);
 
   const template = templates.find((t) => t.id === item.templateId);
 
@@ -210,13 +293,36 @@ function ElementRow({
   };
 
   const submitRename = () => {
-    if (localName.trim() && (localName !== item.name || localSubcategory !== (item.subcategory || '') || localCompany !== (item.company || '') || localCategory !== (item.category || ''))) {
-      renameElement(item.id, localName.trim(), localSubcategory.trim(), localCompany.trim(), localCategory.trim());
-    } else {
-      setLocalName(item.name); // reset
-      setLocalSubcategory(item.subcategory || '');
-      setLocalCompany(item.company || '');
-      setLocalCategory(item.category || '');
+    setRenameError(null);
+    const nameTrimmed = localName.trim();
+    
+    if (nameTrimmed && (nameTrimmed !== item.name || localSubcategory !== (item.subcategory || '') || localCompany !== (item.company || '') || localCategory !== (item.category || ''))) {
+      const isDuplicate = allElements.some(el => 
+        el.id !== item.id &&
+        el.name.toLowerCase() === nameTrimmed.toLowerCase() &&
+        (el.category || '').toLowerCase() === (localCategory.trim().toLowerCase() || '') &&
+        (el.subcategory || '').toLowerCase() === (localSubcategory.trim().toLowerCase() || '') &&
+        (el.company || '').toLowerCase() === (localCompany.trim().toLowerCase() || '')
+      );
+
+      if (isDuplicate) {
+        setRenameError('Duplicate element detected.');
+        return;
+      }
+
+      renameElement(item.id, nameTrimmed, localSubcategory.trim(), localCompany.trim(), localCategory.trim());
+
+      const catTrim = localCategory.trim().toUpperCase();
+      const subTrim = localSubcategory.trim().toUpperCase();
+      const updates: any = {};
+      const customCat = store.state.customCategories || [];
+      const customSub = store.state.customSubcategories || [];
+      if (catTrim && !customCat.includes(catTrim)) updates.customCategories = [...customCat, catTrim];
+      if (subTrim && !customSub.includes(subTrim)) updates.customSubcategories = [...customSub, subTrim];
+      if (Object.keys(updates).length > 0) store.updateSettings(updates);
+
+    } else if (!nameTrimmed) {
+      setLocalName(item.name);
     }
     setIsRenaming(false);
   };
@@ -267,7 +373,13 @@ function ElementRow({
                   placeholder="Company"
                   className="px-2 py-1 bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-bold w-full max-w-[200px] text-xs"
                 />
-                <button onClick={submitRename} className="px-2 py-1 bg-indigo-600 text-white text-xs font-bold w-fit">Save</button>
+                {renameError && (
+                  <span className="text-[10px] text-red-500 font-bold tracking-tight">{renameError}</span>
+                )}
+                <div className="flex gap-2">
+                  <button onClick={submitRename} className="px-2 py-1 bg-indigo-600 text-white text-xs font-bold w-fit">Save</button>
+                  <button onClick={() => { setIsRenaming(false); setRenameError(null); }} className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-100 text-xs font-bold w-fit">Cancel</button>
+                </div>
               </div>
             ) : (
               <span className="font-bold text-slate-800 dark:text-slate-100 text-lg flex flex-wrap items-center gap-2 min-w-0">
@@ -382,7 +494,7 @@ function ElementRow({
                     <div key={c} className="space-y-3">
                       <div className="flex justify-between items-center text-sm">
                         <span className="font-bold text-slate-700 dark:text-slate-300 capitalize">{c}</span>
-                        <div className="flex items-center gap-1 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                        <div className={`flex items-center gap-1 font-mono font-bold ${val < 0 ? 'text-red-500' : 'text-indigo-600 dark:text-indigo-400'}`}>
                           {val} / 20
                         </div>
                       </div>

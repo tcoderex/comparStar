@@ -23,4 +23,7 @@ export type AppState = {
   templates: XaddTemplate[];
   elements: ElementItem[];
   theme?: 'light' | 'dark' | 'system';
+  customSuggestions?: string[];
+  customCategories?: string[];
+  customSubcategories?: string[];
 };

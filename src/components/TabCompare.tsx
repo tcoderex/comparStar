@@ -340,7 +340,7 @@ export function TabCompare({ templates, elements }: Props) {
                               <td key={el.id} className={`p-4 sm:p-6 border-r border-slate-100 dark:border-slate-800 last:border-r-0 align-middle ${isWinner ? 'bg-emerald-50/10 dark:bg-emerald-900/5' : ''}`}>
                                 <div className="space-y-2 sm:space-y-3">
                                   <div className="flex justify-between items-end">
-                                    <span className={`text-xl sm:text-2xl font-black tracking-tight ${isWinner ? 'text-emerald-500' : 'text-indigo-600 dark:text-indigo-400'}`}>
+                                    <span className={`text-xl sm:text-2xl font-black tracking-tight ${score < 0 ? 'text-red-500' : isWinner ? 'text-emerald-500' : 'text-indigo-600 dark:text-indigo-400'}`}>
                                       {score}
                                       <span className="text-[9px] sm:text-[10px] text-slate-400 ml-0.5 sm:ml-1 font-bold">pts</span>
                                     </span>

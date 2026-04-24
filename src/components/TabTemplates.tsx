@@ -2,18 +2,22 @@ import React, { useState, useMemo } from 'react';
 import { Settings, Plus, Trash2, Save, Edit2, Sparkles } from 'lucide-react';
 import { XaddTemplate } from '../types';
 import { SuggestionInput } from './SuggestionInput';
+import { useAppStore } from '../store';
 
 interface Props {
+  store: any;
   templates: XaddTemplate[];
   addTemplate: (t: Omit<XaddTemplate, 'id'>) => void;
   updateTemplate: (id: string, updates: Partial<Omit<XaddTemplate, 'id' | 'userId' | 'createdAt'>>) => void;
   deleteTemplate: (id: string) => void;
 }
 
-export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTemplate }: Props) {
+export function TabTemplates({ store, templates, addTemplate, updateTemplate, deleteTemplate }: Props) {
   const [name, setName] = useState('');
   const [criteriaInput, setCriteriaInput] = useState('');
   const [criteria, setCriteria] = useState<string[]>([]);
+
+  const customSuggestions = store.state.customSuggestions;
 
   const allUniqueCriteria = useMemo(() => {
     const set = new Set<string>();
@@ -25,11 +29,14 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
   const popularCriteria = useMemo(() => {
     const counts: Record<string, number> = {};
     templates.forEach(t => t.criteria.forEach(c => counts[c] = (counts[c] || 0) + 1));
-    return Object.entries(counts)
+    const frequent = Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(entry => entry[0]);
-  }, [templates]);
+    
+    // Combine global and frequent, unique
+    return Array.from(new Set([...customSuggestions, ...frequent]));
+  }, [templates, customSuggestions]);
 
   const handleAddCriteria = (val?: string) => {
     const target = (val || criteriaInput).trim().toUpperCase();
@@ -43,15 +50,50 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
     setCriteria(criteria.filter((_, i) => i !== index));
   };
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSave = () => {
-    if (!name.trim() || criteria.length === 0) return;
-    addTemplate({ name: name.trim(), criteria });
+    setError(null);
+    const nameTrimmed = name.trim().toUpperCase();
+    if (!nameTrimmed) {
+      setError('Please enter a name for the workspace.');
+      return;
+    }
+    if (criteria.length === 0) {
+      setError('Please add at least one criteria.');
+      return;
+    }
+
+    if (templates.some(t => t.name.toUpperCase() === nameTrimmed)) {
+      setError('A workspace with this name already exists.');
+      return;
+    }
+
+    addTemplate({ name: nameTrimmed, criteria });
+    
+    // Auto-add new criteria to settings
+    const newSuggestions = [...customSuggestions];
+    let changed = false;
+    for (const c of criteria) {
+      if (!newSuggestions.includes(c)) {
+        newSuggestions.push(c);
+        changed = true;
+      }
+    }
+    if (changed) store.updateSettings({ customSuggestions: newSuggestions });
+
     setName('');
     setCriteria([]);
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider">
+          {error}
+        </div>
+      )}
+
       <div className="bg-white dark:bg-slate-900 p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
         <h2 className="text-xl font-bold mb-8 flex items-center gap-3 text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-4">
           <div className="w-8 h-8 bg-indigo-100 flex items-center justify-center">
@@ -68,14 +110,14 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-slate-800 dark:text-slate-100"
-                placeholder="e.g., GAME, APP, MOVIE..."
+                className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-bold text-sm uppercase text-slate-900 dark:text-white shadow-sm"
+                placeholder="ENTER LABEL NAME (e.g. MOVE, OBJECT, PERSON)"
                 value={name}
                 onChange={(e) => setName(e.target.value.toUpperCase())}
               />
             </div>
             <div>
-              <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-2">
+              <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-3">
                 Clone Criteria From
               </label>
               <select
@@ -83,10 +125,10 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
                   const t = templates.find(temp => temp.id === e.target.value);
                   if (t) setCriteria([...t.criteria]);
                 }}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold text-xs uppercase text-slate-500 dark:text-slate-400 cursor-pointer appearance-none"
+                className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold text-sm uppercase text-slate-900 dark:text-white cursor-pointer appearance-none shadow-sm"
                 defaultValue=""
               >
-                <option value="" disabled>-- Pick a workspace --</option>
+                <option value="" disabled>-- SELECT OBJECT TO CLONE --</option>
                 {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </div>
@@ -101,40 +143,43 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
                 value={criteriaInput}
                 onChange={setCriteriaInput}
                 suggestions={allUniqueCriteria}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium"
-                placeholder="e.g., GRAPHIC, SIZE, PRICE..."
+                className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-bold text-sm uppercase shadow-sm"
+                placeholder="ENTER CRITERIA (e.g. QUALITY, PRICE, HEALTH)"
               />
               <button
                 type="button"
                 onClick={() => handleAddCriteria()}
-                className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 font-bold shadow-sm"
+                className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 font-black uppercase tracking-widest text-sm shadow-sm"
               >
                 <Plus className="w-5 h-5" />
                 Add
               </button>
             </div>
 
-            {/* Smart Organization Helper */}
-            {popularCriteria.length > 0 && (
-              <div className="mt-4 p-4 bg-indigo-50/30 dark:bg-slate-950/50 border border-indigo-100 dark:border-indigo-900/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-                  <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-widest">Global Suggestions</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {popularCriteria.map(pc => (
-                    <button
-                      key={pc}
-                      type="button"
-                      onClick={() => handleAddCriteria(pc)}
-                      className="px-2 py-1 bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 text-[10px] font-black uppercase text-slate-600 dark:text-indigo-300 hover:border-indigo-500 hover:text-indigo-600 transition-all shadow-sm"
-                    >
-                      + {pc}
-                    </button>
-                  ))}
-                </div>
+            {/* Global Suggestions Box */}
+            <div className="mt-8 p-6 bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-lg">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-4 h-4 text-indigo-500" />
+                <span className="text-xs font-black uppercase text-slate-600 dark:text-slate-400 tracking-widest">Global Suggestions</span>
               </div>
-            )}
+              <div className="flex flex-wrap gap-2">
+                {popularCriteria.map(pc => (
+                  <button
+                    key={pc}
+                    type="button"
+                    onClick={() => handleAddCriteria(pc)}
+                    className={`px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase transition-all shadow-sm ${
+                      criteria.includes(pc)
+                        ? 'opacity-30 cursor-default line-through'
+                        : 'text-indigo-600 dark:text-indigo-400 hover:border-indigo-500'
+                    }`}
+                    disabled={criteria.includes(pc)}
+                  >
+                    + {pc}
+                  </button>
+                ))}
+              </div>
+            </div>
             
             {criteria.length > 0 && (
               <ul className="mt-6 flex flex-wrap gap-2">
@@ -180,6 +225,7 @@ export function TabTemplates({ templates, addTemplate, updateTemplate, deleteTem
                 updateTemplate={updateTemplate}
                 allUniqueCriteria={allUniqueCriteria}
                 popularCriteria={popularCriteria}
+                store={store}
               />
             ))}
           </div>
@@ -196,9 +242,10 @@ interface TemplateRowProps {
   updateTemplate: (id: string, updates: Partial<Omit<XaddTemplate, 'id' | 'userId' | 'createdAt'>>) => void;
   allUniqueCriteria: string[];
   popularCriteria: string[];
+  store: any;
 }
 
-function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, popularCriteria }: TemplateRowProps) {
+function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, popularCriteria, store }: TemplateRowProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [localName, setLocalName] = useState(t.name);
   const [localCriteria, setLocalCriteria] = useState(t.criteria);
@@ -207,6 +254,17 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
   const handleSave = () => {
     if (localName.trim() && localCriteria.length > 0) {
       updateTemplate(t.id, { name: localName.trim().toUpperCase(), criteria: localCriteria });
+
+      const newSuggestions = [...(store.state.customSuggestions || [])];
+      let changed = false;
+      for (const c of localCriteria) {
+        if (!newSuggestions.includes(c)) {
+          newSuggestions.push(c);
+          changed = true;
+        }
+      }
+      if (changed) store.updateSettings({ customSuggestions: newSuggestions });
+
     }
     setIsEditing(false);
   };
