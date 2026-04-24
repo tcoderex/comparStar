@@ -12,8 +12,9 @@ export const googleProvider = new GoogleAuthProvider();
 export const signInWithGoogle = async () => {
   try {
     await signInWithPopup(auth, googleProvider);
-  } catch (error) {
-    console.error('Error signing in with Google', error);
+  } catch (error: any) {
+    console.error('Error signing in with Google:', error);
+    alert('Login failed: ' + (error.message || 'Check console for details. If you are on Vercel, you need to add your Vercel domain to Firebase Auth Authorized Domains.'));
   }
 };
 
