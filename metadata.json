@@ -1,5 +1,5 @@
 {
-  "name": "Star Compare",
+  "name": "ComparStar",
   "description": "App for comparing elements with up to 20-star ratings based on custom criteria categories (xadd).",
   "requestFramePermissions": [],
   "majorCapabilities": []

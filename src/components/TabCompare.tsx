@@ -11,7 +11,7 @@ export function TabCompare({ templates, elements }: Props) {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(templates[0]?.id || '');
   const [selectedElementIds, setSelectedElementIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<string>('');
+  const [filterSubcategory, setFilterSubcategory] = useState<string>('');
   const [filterCompany, setFilterCompany] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [filterXadd, setFilterXadd] = useState<string>('');
@@ -33,7 +33,7 @@ export function TabCompare({ templates, elements }: Props) {
     }
   }, [selectedElementIds, elements, selectedTemplateId]);
 
-  const uniqueTypes = useMemo(() => Array.from(new Set(elements.map(el => el.type).filter(Boolean))), [elements]);
+  const uniqueSubcategories = useMemo(() => Array.from(new Set(elements.map(el => el.subcategory).filter(Boolean))), [elements]);
   const uniqueCompanies = useMemo(() => Array.from(new Set(elements.map(el => el.company).filter(Boolean))), [elements]);
   const uniqueCategories = useMemo(() => Array.from(new Set(elements.map(el => el.category).filter(Boolean))), [elements]);
   const uniqueXadds = useMemo(() => templates.map(t => ({ id: t.id, name: t.name })), [templates]);
@@ -41,13 +41,13 @@ export function TabCompare({ templates, elements }: Props) {
   const filteredElements = useMemo(() => {
     return elements.filter(el => {
       const matchSearch = el.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchType = filterType ? el.type === filterType : true;
+      const matchSubcategory = filterSubcategory ? el.subcategory === filterSubcategory : true;
       const matchComp = filterCompany ? el.company === filterCompany : true;
       const matchCat = filterCategory ? el.category === filterCategory : true;
       const matchXadd = filterXadd ? el.templateId === filterXadd : true;
-      return matchSearch && matchType && matchComp && matchCat && matchXadd;
+      return matchSearch && matchSubcategory && matchComp && matchCat && matchXadd;
     });
-  }, [elements, searchQuery, filterType, filterCompany, filterCategory, filterXadd]);
+  }, [elements, searchQuery, filterSubcategory, filterCompany, filterCategory, filterXadd]);
 
   const toggleElementSelection = (id: string) => {
     if (selectedElementIds.includes(id)) {
@@ -159,12 +159,12 @@ export function TabCompare({ templates, elements }: Props) {
                 </select>
                 <div className="hidden lg:block w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
                 <select 
-                  value={filterType} 
-                  onChange={e => setFilterType(e.target.value)} 
+                  value={filterSubcategory} 
+                  onChange={e => setFilterSubcategory(e.target.value)} 
                   className="bg-transparent text-[11px] px-3 py-2 focus:outline-none text-slate-700 dark:text-slate-200 font-bold uppercase tracking-tight cursor-pointer border-r border-slate-100 dark:border-slate-800 lg:border-r-0"
                 >
-                  <option value="">Any Type</option>
-                  {uniqueTypes.map((cat: any) => <option key={cat} value={cat}>{cat}</option>)}
+                  <option value="">Any Subcategory</option>
+                  {uniqueSubcategories.map((cat: any) => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
                 <div className="hidden lg:block w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
                 <select 
@@ -181,7 +181,7 @@ export function TabCompare({ templates, elements }: Props) {
                 onClick={() => {
                   setFilterXadd('');
                   setFilterCategory('');
-                  setFilterType('');
+                  setFilterSubcategory('');
                   setFilterCompany('');
                   setSearchQuery('');
                 }}
@@ -223,7 +223,7 @@ export function TabCompare({ templates, elements }: Props) {
                     <div className="flex flex-wrap gap-1.5 opacity-80 mt-auto">
                       {el.templateName && <span className="text-[9px] font-black uppercase text-slate-400 tracking-tighter">[{el.templateName}]</span>}
                       {el.category && <span className="text-[9px] font-black uppercase text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded tracking-tighter">{el.category}</span>}
-                      {el.type && <span className="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 px-1.5 py-0.5 rounded tracking-tighter">{el.type}</span>}
+                      {el.subcategory && <span className="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 px-1.5 py-0.5 rounded tracking-tighter">{el.subcategory}</span>}
                       {el.company && <span className="text-[9px] font-black uppercase text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded tracking-tighter">{el.company}</span>}
                     </div>
                   </button>

@@ -8,21 +8,21 @@ export function TabSettings() {
   const [activeTab, setActiveTab] = useState<'sync' | 'manage'>('sync');
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
   const [selectedTemplates, setSelectedTemplates] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([]);
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   
   const [confirmingElements, setConfirmingElements] = useState(false);
   const [confirmingTemplates, setConfirmingTemplates] = useState(false);
-  const [confirmingTypes, setConfirmingTypes] = useState(false);
+  const [confirmingSubcategories, setConfirmingSubcategories] = useState(false);
   const [confirmingCompanies, setConfirmingCompanies] = useState(false);
   const [confirmingCategories, setConfirmingCategories] = useState(false);
 
-  const uniqueTypes = useMemo(() => Array.from(new Set(store.state.elements.map(el => el.type).filter(Boolean))), [store.state.elements]);
+  const uniqueSubcategories = useMemo(() => Array.from(new Set(store.state.elements.map(el => el.subcategory).filter(Boolean))), [store.state.elements]);
   const uniqueCompanies = useMemo(() => Array.from(new Set(store.state.elements.map(el => el.company).filter(Boolean))), [store.state.elements]);
   const uniqueCategories = useMemo(() => Array.from(new Set(store.state.elements.map(el => el.category).filter(Boolean))), [store.state.elements]);
 
-  const handleBulkDelete = async (type: 'elements' | 'templates' | 'type' | 'company' | 'category') => {
+  const handleBulkDelete = async (type: 'elements' | 'templates' | 'subcategory' | 'company' | 'category') => {
     if (type === 'elements' && selectedElements.length > 0) {
       if (confirmingElements) {
         store.bulkDelete('elements', selectedElements);
@@ -39,15 +39,15 @@ export function TabSettings() {
       } else {
         setConfirmingTemplates(true);
       }
-    } else if (type === 'type' && selectedTypes.length > 0) {
-      if (confirmingTypes) {
-        for (const val of selectedTypes) {
-          await store.deleteMetadata('type', val);
+    } else if (type === 'subcategory' && selectedSubcategories.length > 0) {
+      if (confirmingSubcategories) {
+        for (const val of selectedSubcategories) {
+          await store.deleteMetadata('subcategory', val);
         }
-        setSelectedTypes([]);
-        setConfirmingTypes(false);
+        setSelectedSubcategories([]);
+        setConfirmingSubcategories(false);
       } else {
-        setConfirmingTypes(true);
+        setConfirmingSubcategories(true);
       }
     } else if (type === 'company' && selectedCompanies.length > 0) {
       if (confirmingCompanies) {
@@ -72,7 +72,7 @@ export function TabSettings() {
     }
   };
 
-  const toggleAll = (type: 'elements' | 'templates' | 'type' | 'company' | 'category') => {
+  const toggleAll = (type: 'elements' | 'templates' | 'subcategory' | 'company' | 'category') => {
     if (type === 'elements') {
       if (selectedElements.length === store.state.elements.length) setSelectedElements([]);
       else setSelectedElements(store.state.elements.map(e => e.id));
@@ -81,10 +81,10 @@ export function TabSettings() {
       if (selectedTemplates.length === store.state.templates.length) setSelectedTemplates([]);
       else setSelectedTemplates(store.state.templates.map(t => t.id));
       setConfirmingTemplates(false);
-    } else if (type === 'type') {
-      if (selectedTypes.length === uniqueTypes.length) setSelectedTypes([]);
-      else setSelectedTypes(uniqueTypes);
-      setConfirmingTypes(false);
+    } else if (type === 'subcategory') {
+      if (selectedSubcategories.length === uniqueSubcategories.length) setSelectedSubcategories([]);
+      else setSelectedSubcategories(uniqueSubcategories);
+      setConfirmingSubcategories(false);
     } else if (type === 'company') {
       if (selectedCompanies.length === uniqueCompanies.length) setSelectedCompanies([]);
       else setSelectedCompanies(uniqueCompanies);
@@ -258,9 +258,9 @@ export function TabSettings() {
                               {el.category}
                             </span>
                           )}
-                          {el.type && (
+                          {el.subcategory && (
                             <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-tighter rounded">
-                              {el.type}
+                              {el.subcategory}
                             </span>
                           )}
                           {el.company && (
@@ -373,14 +373,14 @@ export function TabSettings() {
                   setConfirming: setConfirmingCategories
                 },
                 { 
-                  label: 'Types', 
-                  data: uniqueTypes, 
-                  field: 'type' as const, 
+                  label: 'Subcategories', 
+                  data: uniqueSubcategories, 
+                  field: 'subcategory' as const, 
                   color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20', 
-                  selected: selectedTypes, 
-                  setSelected: setSelectedTypes,
-                  confirming: confirmingTypes,
-                  setConfirming: setConfirmingTypes
+                  selected: selectedSubcategories, 
+                  setSelected: setSelectedSubcategories,
+                  confirming: confirmingSubcategories,
+                  setConfirming: setConfirmingSubcategories
                 },
                 { 
                   label: 'Companies', 

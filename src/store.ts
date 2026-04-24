@@ -70,8 +70,8 @@ export function useAppStore() {
         return { 
           ...data,
           id: d.id, 
-          type: data.type || data.category_old, // fallback for legacy if any
-          company: data.company || data.subcategory_old, // fallback for legacy if any
+          subcategory: data.subcategory || data.configuration || data.type || data.category_old, // fallback for legacy
+          company: data.company || data.subcategory_old, 
           category: data.category || ''
         } as ElementItem;
       });
@@ -144,9 +144,9 @@ export function useAppStore() {
     }
   };
 
-  const addElement = async (name: string, type?: string, company?: string, category?: string) => {
+  const addElement = async (name: string, subcategory?: string, company?: string, category?: string) => {
     const id = crypto.randomUUID();
-    const newElement = { id, name, type, company, category, templateId: null, templateName: null, ratings: {}, userId: user?.uid, createdAt: new Date().toISOString() };
+    const newElement = { id, name, subcategory, company, category, templateId: null, templateName: null, ratings: {}, userId: user?.uid, createdAt: new Date().toISOString() };
     
     setState(prev => ({ ...prev, elements: [...prev.elements, newElement] }));
 
@@ -155,7 +155,7 @@ export function useAppStore() {
       try {
         await setDoc(docRef, {
           name,
-          type: type || null,
+          subcategory: subcategory || null,
           company: company || null,
           category: category || null,
           templateId: '',
@@ -170,10 +170,10 @@ export function useAppStore() {
     }
   };
 
-  const renameElement = async (id: string, newName: string, newType?: string, newCompany?: string, newCategory?: string) => {
+  const renameElement = async (id: string, newName: string, newSubcategory?: string, newCompany?: string, newCategory?: string) => {
     setState(prev => ({
       ...prev,
-      elements: prev.elements.map(el => el.id === id ? { ...el, name: newName, type: newType, company: newCompany, category: newCategory } : el)
+      elements: prev.elements.map(el => el.id === id ? { ...el, name: newName, subcategory: newSubcategory, company: newCompany, category: newCategory } : el)
     }));
 
     if (user) {
@@ -181,7 +181,7 @@ export function useAppStore() {
       try {
         await updateDoc(docRef, { 
           name: newName, 
-          type: newType || null, 
+          subcategory: newSubcategory || null, 
           company: newCompany || null,
           category: newCategory || null
         });
@@ -251,7 +251,7 @@ export function useAppStore() {
     }
   };
 
-  const deleteMetadata = async (field: 'type' | 'company' | 'category', value: string) => {
+  const deleteMetadata = async (field: 'subcategory' | 'company' | 'category', value: string) => {
     setState(prev => ({
       ...prev,
       elements: prev.elements.map(el => el[field] === value ? { ...el, [field]: '' } : el)

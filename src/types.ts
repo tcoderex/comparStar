@@ -9,7 +9,7 @@ export type XaddTemplate = {
 export type ElementItem = {
   id: string;
   name: string;
-  type?: string;
+  subcategory?: string;
   company?: string;
   category?: string;
   templateId: string | null;

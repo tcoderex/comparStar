@@ -33,7 +33,7 @@ export default function App() {
           <div className="w-8 h-8 bg-indigo-600 flex items-center justify-center rounded-sm shrink-0 shadow-sm shadow-indigo-200">
             <Star className="w-5 h-5 text-white fill-white" />
           </div>
-          <span className="font-black tracking-tight text-xl hidden lg:inline-block">STARCOMPARE</span>
+          <span className="font-black tracking-tight text-xl hidden lg:inline-block">COMPARSTAR</span>
         </div>
         
         <div className="flex flex-1 justify-center sm:max-w-xl md:max-w-3xl mx-auto h-full overflow-x-auto no-scrollbar absolute left-12 right-12 sm:static sm:left-auto sm:right-auto">
