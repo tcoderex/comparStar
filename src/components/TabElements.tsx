@@ -377,7 +377,7 @@ function ElementRow({
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                 {template.criteria.map((c) => {
-                  const val = localRatings[c] || 1;
+                  const val = localRatings[c] !== undefined ? localRatings[c] : 0;
                   return (
                     <div key={c} className="space-y-3">
                       <div className="flex justify-between items-center text-sm">
@@ -388,7 +388,7 @@ function ElementRow({
                       </div>
                       <input
                         type="range"
-                        min="1"
+                        min="-20"
                         max="20"
                         step="1"
                         value={val}

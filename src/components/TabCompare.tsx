@@ -71,11 +71,11 @@ export function TabCompare({ templates, elements }: Props) {
     });
 
     selectedTemplate.criteria.forEach(c => {
-      let maxScore = -1;
+      let maxScore = -Infinity;
       let winners: string[] = [];
 
       compareElements.forEach(el => {
-        const score = el.ratings[c] || 0;
+        const score = el.ratings[c] !== undefined ? el.ratings[c] : 0;
         overallScores[el.id] += score;
 
         if (score > maxScore) {
@@ -90,7 +90,7 @@ export function TabCompare({ templates, elements }: Props) {
     });
 
     let overallWinners: string[] = [];
-    let maxTotal = -1;
+    let maxTotal = -Infinity;
     Object.entries(overallScores).forEach(([id, total]) => {
       if (total > maxTotal) {
         maxTotal = total;
@@ -333,7 +333,7 @@ export function TabCompare({ templates, elements }: Props) {
                             <div className="w-4 sm:w-6 h-1 bg-indigo-500 mt-1.5 sm:mt-2"></div>
                           </td>
                           {comparisonResults.sortedElements.map(el => {
-                            const score = el.ratings[c] || 0;
+                            const score = el.ratings[c] !== undefined ? el.ratings[c] : 0;
                             const isWinner = result.winnerIds.includes(el.id);
                             
                             return (
@@ -349,7 +349,7 @@ export function TabCompare({ templates, elements }: Props) {
                                   <div className="h-1.5 sm:h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex shadow-inner">
                                     <div 
                                       className={`h-full transition-all duration-1000 ease-out shadow-sm ${isWinner ? 'bg-gradient-to-r from-emerald-400 to-emerald-600' : 'bg-gradient-to-r from-indigo-400 to-indigo-600'}`}
-                                      style={{ width: `${(score / 20) * 100}%` }}
+                                      style={{ width: `${Math.max(0, Math.min(100, ((score + 20) / 40) * 100))}%` }}
                                     ></div>
                                   </div>
                                 </div>
