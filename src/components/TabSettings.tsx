@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { LogIn, LogOut, CheckSquare, Trash2, Shield, Moon, Sun, Monitor, AlertTriangle, Plus, Save, Sparkles, Hash, Edit2 } from 'lucide-react';
-import { signInWithGoogle, signOut } from '../firebase';
+import { signInWithGoogle, signInWithGoogleRedirect, signOut } from '../firebase';
 
 export function TabSettings({ store }: { store: any }) {
   const [activeTab, setActiveTab] = useState<'sync' | 'manage' | 'presets'>('sync');
@@ -194,21 +194,47 @@ export function TabSettings({ store }: { store: any }) {
             <div className="pt-6 border-t border-slate-100 flex flex-col items-start gap-4 dark:border-slate-800">
               <h4 className="text-xs font-black uppercase text-slate-500 tracking-widest mb-2 dark:text-slate-400">Account</h4>
               {!store.user ? (
-                <div className="space-y-4">
+                <div className="space-y-6 w-full max-w-xl">
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300 max-w-md">
                     You are currently using Star Compare offline. Your data is saved locally to this device. Register to safely sync elements and templates to the cloud.
                   </p>
-                  <button
-                    onClick={signInWithGoogle}
-                    className="px-6 py-3 bg-indigo-600 text-white font-bold flex items-center gap-2 hover:bg-indigo-700 transition shadow-sm shadow-indigo-200 dark:shadow-none"
-                  >
-                    <LogIn className="w-5 h-5" /> Sign In with Google
-                  </button>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={signInWithGoogle}
+                      className="px-6 py-3 bg-indigo-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition shadow-sm shadow-indigo-200 dark:shadow-none text-sm"
+                    >
+                      <LogIn className="w-5 h-5" /> Sign In (Popup)
+                    </button>
+                    
+                    <button
+                      onClick={signInWithGoogleRedirect}
+                      className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-sm"
+                    >
+                      <LogIn className="w-5 h-5" /> Sign In (Redirect fallback)
+                    </button>
+                  </div>
+
+                  <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 p-4 rounded text-xs text-amber-800 dark:text-amber-400 space-y-2 max-w-lg">
+                    <div className="flex items-center gap-2 font-bold uppercase tracking-wider">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                      Vercel Authentication Guide
+                    </div>
+                    <p className="font-medium leading-relaxed">
+                      If you're hosting this app on custom domains like <span className="underline font-bold">comparstar.vercel.app</span>, please make sure you configured Firebase:
+                    </p>
+                    <ol className="list-decimal pl-5 space-y-1 font-medium leading-relaxed">
+                      <li>Open the <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-700 font-bold">Firebase Console</a>.</li>
+                      <li>Go to <strong>Authentication</strong> &gt; <strong>Settings</strong> &gt; <strong>Authorized domains</strong>.</li>
+                      <li>Click <strong>Add domain</strong> and enter <code className="bg-amber-100/50 dark:bg-amber-900/40 px-1 py-0.5 rounded font-mono">comparstar.vercel.app</code>.</li>
+                      <li>If popups get blocked by your browser, use the <strong>Redirect fallback</strong> button above!</li>
+                    </ol>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300 max-w-md">
-                    Your data is being safely synced to your account in real time.
+                    Your data is being safely synced to your account in real time with project: <strong className="text-indigo-600 dark:text-indigo-400 font-mono">tcoderex</strong>
                   </p>
                   <button
                     onClick={signOut}

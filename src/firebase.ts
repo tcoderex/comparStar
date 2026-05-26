@@ -1,20 +1,58 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut } from 'firebase/auth';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 
 export const googleProvider = new GoogleAuthProvider();
 
+// Customize provider prompts or scopes if needed
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 export const signInWithGoogle = async () => {
   try {
+    // Attempt standard popup sign-in
     await signInWithPopup(auth, googleProvider);
   } catch (error: any) {
     console.error('Error signing in with Google:', error);
-    alert('Login failed: ' + (error.message || 'Check console for details. If you are on Vercel, you need to add your Vercel domain to Firebase Auth Authorized Domains.'));
+    
+    // Check if error is due to popup blocker or matching redirect constraints
+    const isPopupBlocked = 
+      error.code === 'auth/popup-blocked' || 
+      error.message?.includes('popup') || 
+      error.message?.includes('closed-by-user');
+
+    if (isPopupBlocked) {
+      console.warn('Popup blocked, retrying with redirect...');
+      alert('Your browser blocked the login popup. Redirecting you to Google logon instead...');
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (redirectError: any) {
+        console.error('Error with redirect sign-in:', redirectError);
+        alert('Authentication failed: ' + (redirectError.message || redirectError));
+      }
+    } else {
+      alert(
+        'Login failed: ' + (error.message || 'Unknown error') + '\n\n' +
+        'If you are hosting on Vercel, please ensure:\n' +
+        '1. "comparstar.vercel.app" is added to your Firebase Auth -> Settings -> Authorized Domains.\n' +
+        '2. Try the "Sign in with redirect" option in Settings.'
+      );
+    }
+  }
+};
+
+export const signInWithGoogleRedirect = async () => {
+  try {
+    await signInWithRedirect(auth, googleProvider);
+  } catch (error: any) {
+    console.error('Redirect sign in error:', error);
+    alert('Redirect sign in failed: ' + error.message);
   }
 };
 
