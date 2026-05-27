@@ -87,37 +87,37 @@ export function TabTemplates({ store, templates, addTemplate, updateTemplate, de
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 font-sans">
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider">
+        <div className="bg-red-950/40 border border-red-900 p-3 text-red-500 text-xs font-bold uppercase tracking-widest font-display animate-in fade-in zoom-in duration-300">
           {error}
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-900 p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <h2 className="text-xl font-bold mb-8 flex items-center gap-3 text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-4">
-          <div className="w-8 h-8 bg-indigo-100 flex items-center justify-center">
-            <Settings className="w-4 h-4 text-indigo-600" />
-          </div>
-          CREATE NEW XADD
+      <div className="bg-black/60 p-6 md:p-8 border border-[#444444] shadow-lg relative">
+        <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#c5b358]"></div>
+        <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#c5b358]"></div>
+        
+        <h2 className="text-xl font-display font-medium tracking-[0.2em] mb-8 flex items-center justify-center gap-3 text-[#e0e0d1] border-b border-[#333] pb-6 uppercase">
+          <span className="text-[#444]">♦</span> CREATE NEW TOME <span className="text-[#444]">♦</span>
         </h2>
         
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-2">
-                Xadd Label Name
+              <label className="block text-xs font-display uppercase tracking-[0.1em] text-gray-500 mb-2">
+                Tome Title
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-bold text-sm uppercase text-slate-900 dark:text-white shadow-sm"
-                placeholder="ENTER LABEL NAME (e.g. MOVE, OBJECT, PERSON)"
+                className="w-full px-4 py-4 bg-black/50 border border-[#333] text-[#e0e0d1] focus:outline-none focus:border-[#c5b358] transition-colors font-bold text-sm uppercase placeholder-gray-600 font-display tracking-widest"
+                placeholder="ENTER NAME (e.g. WEAPONS)"
                 value={name}
                 onChange={(e) => setName(e.target.value.toUpperCase())}
               />
             </div>
             <div>
-              <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-3">
+              <label className="block text-xs font-display uppercase tracking-[0.1em] text-gray-500 mb-2">
                 Clone Criteria From
               </label>
               <select
@@ -125,31 +125,31 @@ export function TabTemplates({ store, templates, addTemplate, updateTemplate, de
                   const t = templates.find(temp => temp.id === e.target.value);
                   if (t) setCriteria([...t.criteria]);
                 }}
-                className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold text-sm uppercase text-slate-900 dark:text-white cursor-pointer appearance-none shadow-sm"
+                className="w-full px-4 py-4 bg-black/50 border border-[#333] text-[#e0e0d1] focus:outline-none focus:border-[#c5b358] font-bold text-sm uppercase cursor-pointer appearance-none font-display tracking-widest"
                 defaultValue=""
               >
-                <option value="" disabled>-- SELECT OBJECT TO CLONE --</option>
+                <option value="" disabled className="text-gray-600">-- SELECT TOME TO CLONE --</option>
                 {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-2">
-              Criteria Inputs
+            <label className="block text-xs font-display uppercase tracking-[0.1em] text-gray-500 mb-2 mt-4">
+              Attributes / Criteria
             </label>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
               <SuggestionInput
                 value={criteriaInput}
                 onChange={setCriteriaInput}
                 suggestions={allUniqueCriteria}
-                className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-bold text-sm uppercase shadow-sm"
-                placeholder="ENTER CRITERIA (e.g. QUALITY, PRICE, HEALTH)"
+                className="w-full px-4 py-4 bg-black/50 border border-[#333] text-[#e0e0d1] focus:outline-none focus:border-[#c5b358] transition-colors font-bold text-sm uppercase font-display tracking-widest placeholder-gray-600"
+                placeholder="ENTER ATTRIBUTE (e.g. DAMAGE, WEIGHT)"
               />
               <button
                 type="button"
                 onClick={() => handleAddCriteria()}
-                className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 font-black uppercase tracking-widest text-sm shadow-sm"
+                className="px-8 py-4 bg-transparent border border-[#444444] text-[#c5b358] hover:bg-[#c5b358] hover:text-black transition-colors flex items-center justify-center gap-2 font-display uppercase tracking-widest text-sm"
               >
                 <Plus className="w-5 h-5" />
                 Add
@@ -157,10 +157,10 @@ export function TabTemplates({ store, templates, addTemplate, updateTemplate, de
             </div>
 
             {/* Global Suggestions Box */}
-            <div className="mt-8 p-6 bg-slate-50/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-lg">
+            <div className="mt-8 p-6 bg-black/40 border border-[#333]">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-4 h-4 text-indigo-500" />
-                <span className="text-xs font-black uppercase text-slate-600 dark:text-slate-400 tracking-widest">Global Suggestions</span>
+                <Sparkles className="w-4 h-4 text-[#c5b358]" />
+                <span className="text-xs font-display uppercase text-gray-400 tracking-widest">Global Suggestions</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {popularCriteria.map(pc => (
@@ -168,10 +168,10 @@ export function TabTemplates({ store, templates, addTemplate, updateTemplate, de
                     key={pc}
                     type="button"
                     onClick={() => handleAddCriteria(pc)}
-                    className={`px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase transition-all shadow-sm ${
+                    className={`px-3 py-1.5 bg-transparent border border-[#444444] text-[10px] font-display uppercase tracking-widest transition-all ${
                       criteria.includes(pc)
-                        ? 'opacity-30 cursor-default line-through'
-                        : 'text-indigo-600 dark:text-indigo-400 hover:border-indigo-500'
+                        ? 'opacity-30 cursor-default line-through text-gray-500'
+                        : 'text-gray-300 hover:border-[#c5b358] hover:text-[#c5b358]'
                     }`}
                     disabled={criteria.includes(pc)}
                   >
@@ -184,11 +184,11 @@ export function TabTemplates({ store, templates, addTemplate, updateTemplate, de
             {criteria.length > 0 && (
               <ul className="mt-6 flex flex-wrap gap-2">
                 {criteria.map((c, i) => (
-                  <li key={i} className="bg-white dark:bg-indigo-950/30 border text-indigo-700 dark:text-indigo-300 px-3 py-1.5 text-xs font-black uppercase tracking-wider flex items-center gap-3 border-indigo-200 dark:border-indigo-500/30 group hover:border-indigo-400">
+                  <li key={i} className="bg-black border border-[#c5b358] text-[#c5b358] px-3 py-1.5 text-xs font-display uppercase tracking-widest flex items-center gap-3">
                     {c}
                     <button
                       onClick={() => handleRemoveCriteria(i)}
-                      className="text-slate-400 hover:text-red-500 focus:outline-none p-0.5 transition-colors"
+                      className="text-[#c5b358] hover:text-red-500 focus:outline-none p-0.5 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -198,23 +198,25 @@ export function TabTemplates({ store, templates, addTemplate, updateTemplate, de
             )}
           </div>
 
-          <div className="pt-8 mt-8 border-t border-slate-200 dark:border-slate-800">
+          <div className="pt-8 mt-8 border-t border-[#333] flex justify-center">
             <button
               onClick={handleSave}
               disabled={!name.trim() || criteria.length === 0}
-              className="w-full px-6 py-4 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-bold text-sm tracking-widest uppercase shadow-md shadow-indigo-200/50 dark:shadow-none"
+              className="px-8 py-4 bg-transparent border border-[#444444] text-[#c5b358] hover:border-[#c5b358] hover:bg-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-display text-sm tracking-[0.2em] uppercase w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
-              Save Workspace
+              Scribe Tome
             </button>
           </div>
         </div>
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-xs font-black tracking-widest text-slate-400 dark:text-slate-500 uppercase">Saved Workspaces</h3>
+        <h3 className="text-xs font-display tracking-[0.1em] text-gray-500 uppercase flex items-center gap-2">
+          <span className="text-[#444]">♦</span> Saved Tomes <span className="text-[#444]">♦</span>
+        </h3>
         {templates.length === 0 ? (
-          <div className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 italic">No xadds created yet. Create one above to get started!</div>
+          <div className="p-4 bg-black/50 border border-[#333] text-gray-500 text-sm font-display tracking-widest flex justify-center">No tomes exist in the library.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {templates.map((t) => (
@@ -279,13 +281,13 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
 
   if (isEditing) {
     return (
-      <div className="bg-white dark:bg-slate-900 p-6 border-2 border-indigo-500 dark:border-indigo-400 flex flex-col items-start gap-4 shadow-md w-full">
+      <div className="bg-black/80 p-6 border border-[#c5b358] flex flex-col items-start gap-4 w-full shadow-[0_0_15px_rgba(197,179,88,0.2)]">
         <input
           type="text"
-          className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-indigo-500 font-black text-lg text-slate-800 dark:text-slate-100"
+          className="w-full px-3 py-2 bg-black border border-[#c5b358] focus:outline-none focus:ring-1 focus:ring-[#c5b358] font-display text-lg text-[#e0e0d1] tracking-widest uppercase"
           value={localName}
           onChange={(e) => setLocalName(e.target.value.toUpperCase())}
-          placeholder="XADD NAME"
+          placeholder="TOME NAME"
         />
         
         <div className="w-full space-y-2">
@@ -294,10 +296,10 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
               value={newCriteria}
               onChange={setNewCriteria}
               suggestions={allUniqueCriteria}
-              className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-indigo-500 text-sm font-medium text-slate-900 dark:text-white"
-              placeholder="New criteria..."
+              className="flex-1 px-3 py-2 bg-black border border-[#444444] focus:outline-none focus:border-[#c5b358] text-sm text-[#e0e0d1] font-display tracking-widest uppercase placeholder-gray-600"
+              placeholder="NEW ATTRIBUTE..."
             />
-            <button onClick={() => addCriteria()} className="px-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-bold">Add</button>
+            <button onClick={() => addCriteria()} className="px-4 bg-transparent border border-[#444444] text-[#c5b358] hover:border-[#c5b358] font-display uppercase tracking-widest text-sm transition-colors">Add</button>
           </div>
           
           <div className="flex flex-wrap gap-1 mt-1">
@@ -305,7 +307,7 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
                <button
                  key={pc}
                  onClick={() => addCriteria(pc)}
-                 className="text-[8px] font-black uppercase text-indigo-400 hover:text-indigo-600 px-1"
+                 className="text-[10px] font-display tracking-widest uppercase text-gray-500 hover:text-[#c5b358] px-1 transition-colors"
                >
                  + {pc}
                </button>
@@ -314,9 +316,9 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
 
           <div className="flex flex-wrap gap-2">
             {localCriteria.map((c, i) => (
-              <span key={i} className="flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 text-[10px] uppercase font-black tracking-widest border border-indigo-200 dark:border-indigo-800">
+              <span key={i} className="flex items-center gap-1 bg-black text-gray-300 px-2.5 py-1 text-[10px] uppercase font-display tracking-widest border border-[#444444]">
                 {c}
-                <button onClick={() => setLocalCriteria(localCriteria.filter((_, idx) => idx !== i))} className="hover:text-red-500 ml-1">
+                <button onClick={() => setLocalCriteria(localCriteria.filter((_, idx) => idx !== i))} className="text-[#c5b358] hover:text-red-500 ml-1 transition-colors">
                   &times;
                 </button>
               </span>
@@ -324,11 +326,11 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
           </div>
         </div>
 
-        <div className="flex gap-2 w-full mt-2">
-          <button onClick={handleSave} className="flex-1 bg-indigo-600 text-white py-2 text-xs font-bold uppercase tracking-widest hover:bg-indigo-700 transition-colors">
-            Save
+        <div className="flex gap-2 w-full mt-4">
+          <button onClick={handleSave} className="flex-1 bg-transparent border border-[#c5b358] text-[#c5b358] py-2 text-xs font-display uppercase tracking-[0.2em] hover:bg-[#c5b358] hover:text-black transition-colors">
+            Seal
           </button>
-          <button onClick={() => { setLocalName(t.name); setLocalCriteria(t.criteria); setIsEditing(false); }} className="flex-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2 text-xs font-bold uppercase tracking-widest hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+          <button onClick={() => { setLocalName(t.name); setLocalCriteria(t.criteria); setIsEditing(false); }} className="flex-1 bg-transparent border border-[#444444] text-gray-400 py-2 text-xs font-display uppercase tracking-[0.2em] hover:border-gray-300 hover:text-gray-200 transition-colors">
             Cancel
           </button>
         </div>
@@ -337,21 +339,24 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-colors group flex flex-col items-start gap-4 shadow-sm relative">
-      <div className="flex justify-between items-start w-full mb-2">
-        <h4 className="font-black text-slate-800 dark:text-slate-100 tracking-tight text-lg">{t.name}</h4>
+    <div className="bg-black/60 p-6 border border-[#333] hover:border-[#c5b358] transition-colors group flex flex-col items-start gap-4 relative">
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-transparent group-hover:border-[#c5b358] transition-colors"></div>
+      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-transparent group-hover:border-[#c5b358] transition-colors"></div>
+      
+      <div className="flex justify-between items-start w-full mb-2 border-b border-[#333] pb-2">
+        <h4 className="font-display text-[#e0e0d1] tracking-[0.2em] uppercase text-lg">{t.name}</h4>
         <div className="flex gap-2 transition-opacity">
           <button
             onClick={() => setIsEditing(true)}
-            className="text-slate-400 hover:text-indigo-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded"
-            title="Edit Xadd"
+            className="text-gray-600 hover:text-[#c5b358] transition-colors p-1"
+            title="Edit Tome"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => deleteTemplate(t.id)}
-            className="text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded"
-            title="Delete Xadd"
+            className="text-gray-600 hover:text-red-500 transition-colors p-1"
+            title="Burn Tome"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -359,7 +364,7 @@ function TemplateRow({ t, deleteTemplate, updateTemplate, allUniqueCriteria, pop
       </div>
       <div className="flex flex-wrap gap-2 w-full">
         {t.criteria.map((c, i) => (
-          <span key={i} className="bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-300 px-2.5 py-1 text-[10px] uppercase font-black tracking-widest border border-slate-200 dark:border-slate-800">
+          <span key={i} className="bg-transparent text-gray-400 px-2 py-0.5 text-[10px] uppercase font-display tracking-widest border border-[#444444]">
             {c}
           </span>
         ))}

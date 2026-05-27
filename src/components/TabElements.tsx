@@ -104,47 +104,47 @@ export function TabElements({
   }, [elements, search, sortOrder]);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 font-sans">
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider animate-in fade-in zoom-in duration-300">
+        <div className="bg-red-950/40 border border-red-900 p-3 text-red-500 text-xs font-bold uppercase tracking-widest font-display animate-in fade-in zoom-in duration-300">
           {error}
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
+      <div className="bg-black/60 p-4 sm:p-6 border border-[#444444] flex flex-col md:flex-row gap-4 items-center justify-between shadow-lg">
         <form onSubmit={handleAdd} className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           <input
             type="text"
-            className="px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
-            placeholder="NAME (e.g. SIMS 4, IPHONE)"
+            className="px-4 py-4 bg-black/50 border border-[#333] text-[#e0e0d1] focus:outline-none focus:border-[#c5b358] transition-colors font-bold text-sm uppercase font-display tracking-widest placeholder-gray-600"
+            placeholder="NAME (e.g. SKYRIM)"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
           <SuggestionInput
-            placeholder="CATEGORY (e.g. GAME)"
+            placeholder="CATEGORY (e.g. QUEST)"
             value={newCategory}
             onChange={setNewCategory}
             suggestions={uniqueCategoriesValues}
-            className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
+            className="w-full px-4 py-4 bg-black/50 border border-[#333] text-[#e0e0d1] focus:outline-none focus:border-[#c5b358] transition-colors font-bold text-sm uppercase font-display tracking-widest placeholder-gray-600"
           />
           <SuggestionInput
             placeholder="SUBCATEGORY"
             value={newSubcategory}
             onChange={setNewSubcategory}
             suggestions={uniqueSubcategories}
-            className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
+            className="w-full px-4 py-4 bg-black/50 border border-[#333] text-[#e0e0d1] focus:outline-none focus:border-[#c5b358] transition-colors font-bold text-sm uppercase font-display tracking-widest placeholder-gray-600"
           />
           <SuggestionInput
-            placeholder="COMPANY (e.g. EA, APPLE)"
+            placeholder="COMPANY / FACTION"
             value={newCompany}
             onChange={setNewCompany}
             suggestions={uniqueCompanies}
-            className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 transition-colors font-bold text-sm uppercase shadow-sm"
+            className="w-full px-4 py-4 bg-black/50 border border-[#333] text-[#e0e0d1] focus:outline-none focus:border-[#c5b358] transition-colors font-bold text-sm uppercase font-display tracking-widest placeholder-gray-600"
           />
           <button
             type="submit"
             disabled={!newName.trim()}
-            className="px-6 py-3 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-bold shadow-sm shadow-indigo-200 uppercase tracking-widest text-sm"
+            className="px-6 py-3 border border-[#444444] text-[#c5b358] bg-transparent hover:bg-[#c5b358] hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#c5b358] disabled:cursor-not-allowed flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-sm font-display"
           >
             <Plus className="w-5 h-5 shrink-0" />
             <span>Add</span>
@@ -153,16 +153,16 @@ export function TabElements({
       </div>
 
       {(uniqueCategoriesValues.length > 0 || uniqueSubcategories.length > 0) && (
-        <div className="bg-slate-50/50 dark:bg-slate-900/30 p-4 border border-slate-200 dark:border-slate-800 rounded-lg">
+        <div className="bg-black/40 p-4 border border-[#333]">
           <div className="flex flex-col gap-4">
             {uniqueCategoriesValues.length > 0 && (
               <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest mr-2">Quick Category:</span>
+                <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest mr-2 font-display">Quick Category:</span>
                 {uniqueCategoriesValues.map(cat => (
                   <button
                     key={cat}
                     onClick={() => setNewCategory(cat)}
-                    className="px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 transition-all shadow-sm"
+                    className="px-2 py-1 bg-transparent border border-[#444444] text-[10px] font-bold uppercase text-gray-300 hover:border-[#c5b358] hover:text-[#c5b358] transition-all font-display tracking-widest"
                   >
                     {cat}
                   </button>
@@ -171,12 +171,12 @@ export function TabElements({
             )}
             {uniqueSubcategories.length > 0 && (
               <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest mr-2">Quick Sub:</span>
+                <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest mr-2 font-display">Quick Sub:</span>
                 {uniqueSubcategories.map(sub => (
                   <button
                     key={sub}
                     onClick={() => setNewSubcategory(sub)}
-                    className="px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 hover:border-emerald-500 transition-all shadow-sm"
+                    className="px-2 py-1 bg-transparent border border-[#444444] text-[10px] font-bold uppercase text-gray-300 hover:border-[#c5b358] hover:text-[#c5b358] transition-all font-display tracking-widest"
                   >
                     {sub}
                   </button>
@@ -187,16 +187,16 @@ export function TabElements({
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-col sm:flex-row gap-4 justify-between items-center">
+      <div className="bg-black/60 border border-[#444444] overflow-hidden shadow-lg">
+        <div className="p-4 border-b border-[#333] flex flex-col sm:flex-row gap-4 justify-between items-center bg-black/80">
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search elements..."
+              placeholder="SEARCH DISCOVERIES..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-indigo-500"
+              className="w-full pl-9 pr-4 py-2 bg-transparent border border-[#444444] text-[#e0e0d1] text-xs font-display tracking-widest uppercase focus:outline-none focus:border-[#c5b358] placeholder-gray-600"
             />
           </div>
           
@@ -204,7 +204,7 @@ export function TabElements({
             <select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value as any)}
-              className="w-full sm:w-auto px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:border-indigo-500"
+              className="w-full sm:w-auto px-3 py-2 bg-black border border-[#444444] text-gray-300 text-xs font-display tracking-widest uppercase focus:outline-none focus:border-[#c5b358]"
             >
               <option value="name">Sort by Name</option>
               <option value="ratingDesc">Rating: High to Low</option>
@@ -213,10 +213,10 @@ export function TabElements({
           </div>
         </div>
 
-        <div className="divide-y divide-slate-200 dark:divide-slate-800">
+        <div className="divide-y divide-[#333]">
           {sortedElements.length === 0 ? (
-            <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-              No elements found. Add one to get started!
+            <div className="p-8 text-center text-gray-500 font-display uppercase tracking-widest">
+              No elements found. The scroll is blank.
             </div>
           ) : (
             sortedElements.map((el) => (
@@ -338,7 +338,7 @@ function ElementRow({
   };
 
   return (
-    <div className={`p-4 sm:p-6 transition-colors border-l-4 ${isEditing ? 'bg-indigo-50/30 dark:bg-indigo-900/20 border-l-indigo-500 dark:border-l-indigo-400' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 border-l-transparent'}`}>
+    <div className={`p-4 sm:p-6 transition-colors border-l-4 ${isEditing ? 'bg-black/80 border-l-[#c5b358]' : 'hover:bg-[#1a1a1a] border-l-transparent'}`}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex-1 shrink-0 flex flex-col gap-1">
           <div className="flex items-center gap-3">
@@ -347,59 +347,59 @@ function ElementRow({
                 <input
                   type="text"
                   autoFocus
-                  className="px-2 py-1 bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-bold w-full max-w-[200px]"
+                  className="px-3 py-2 bg-black border border-[#c5b358] focus:outline-none focus:ring-1 focus:ring-[#c5b358] text-[#e0e0d1] font-display tracking-widest w-full max-w-[200px]"
                   value={localName}
                   onChange={(e) => setLocalName(e.target.value)}
-                  placeholder="Name"
+                  placeholder="NAME"
                 />
                 <SuggestionInput
                   value={localCategory}
                   onChange={setLocalCategory}
                   suggestions={uniqueCategoriesValues}
-                  placeholder="Category"
-                  className="px-2 py-1 bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-bold w-full max-w-[200px] text-xs"
+                  placeholder="CATEGORY"
+                  className="px-3 py-2 bg-black border border-[#444444] focus:outline-none focus:border-[#c5b358] text-[#e0e0d1] font-display tracking-widest w-full max-w-[200px] text-xs"
                 />
                 <SuggestionInput
                   value={localSubcategory}
                   onChange={setLocalSubcategory}
                   suggestions={uniqueSubcategories}
-                  placeholder="Subcategory"
-                  className="px-2 py-1 bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-bold w-full max-w-[200px] text-xs"
+                  placeholder="SUBCATEGORY"
+                  className="px-3 py-2 bg-black border border-[#444444] focus:outline-none focus:border-[#c5b358] text-[#e0e0d1] font-display tracking-widest w-full max-w-[200px] text-xs"
                 />
                 <SuggestionInput
                   value={localCompany}
                   onChange={setLocalCompany}
                   suggestions={uniqueCompanies}
-                  placeholder="Company"
-                  className="px-2 py-1 bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 font-bold w-full max-w-[200px] text-xs"
+                  placeholder="FACTION/COMPANY"
+                  className="px-3 py-2 bg-black border border-[#444444] focus:outline-none focus:border-[#c5b358] text-[#e0e0d1] font-display tracking-widest w-full max-w-[200px] text-xs"
                 />
                 {renameError && (
-                  <span className="text-[10px] text-red-500 font-bold tracking-tight">{renameError}</span>
+                  <span className="text-[10px] text-red-500 font-bold tracking-tight bg-red-950/40 p-1 border border-red-900">{renameError}</span>
                 )}
-                <div className="flex gap-2">
-                  <button onClick={submitRename} className="px-2 py-1 bg-indigo-600 text-white text-xs font-bold w-fit">Save</button>
-                  <button onClick={() => { setIsRenaming(false); setRenameError(null); }} className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-100 text-xs font-bold w-fit">Cancel</button>
+                <div className="flex gap-2 mt-2">
+                  <button onClick={submitRename} className="px-3 py-1 bg-transparent border border-[#c5b358] text-[#c5b358] hover:bg-[#c5b358] hover:text-black font-display tracking-widest uppercase text-xs w-fit transition-colors">Save</button>
+                  <button onClick={() => { setIsRenaming(false); setRenameError(null); }} className="px-3 py-1 bg-transparent border border-[#444444] text-gray-400 hover:border-gray-300 font-display tracking-widest uppercase text-xs w-fit transition-colors">Cancel</button>
                 </div>
               </div>
             ) : (
-              <span className="font-bold text-slate-800 dark:text-slate-100 text-lg flex flex-wrap items-center gap-2 min-w-0">
-                <span className="truncate">{item.name}</span>
-                <button onClick={() => setIsRenaming(true)} className="text-slate-300 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors p-1 shrink-0">
+              <span className="font-display text-[#e0e0d1] text-xl tracking-widest uppercase flex flex-wrap items-center gap-2 min-w-0">
+                <span className="truncate drop-shadow-md">{item.name}</span>
+                <button onClick={() => setIsRenaming(true)} className="text-gray-600 hover:text-[#c5b358] transition-colors p-1 shrink-0">
                   <Edit2 className="w-4 h-4" />
                 </button>
-                <div className="flex gap-1 shrink-0">
+                <div className="flex gap-2 shrink-0 ml-2">
                   {item.category && (
-                    <span className="py-0.5 px-2 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900 rounded text-[10px] uppercase font-black tracking-widest block">
+                    <span className="py-0.5 px-2 bg-black border border-[#444444] text-[#c5b358] text-[9px] uppercase font-bold tracking-widest block font-sans">
                       {item.category}
                     </span>
                   )}
                   {item.subcategory && (
-                    <span className="py-0.5 px-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900 rounded text-[10px] uppercase font-black tracking-widest block">
+                    <span className="py-0.5 px-2 bg-black border border-[#444444] text-gray-300 text-[9px] uppercase font-bold tracking-widest block font-sans">
                       {item.subcategory}
                     </span>
                   )}
                   {item.company && (
-                    <span className="py-0.5 px-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50 rounded text-[10px] uppercase font-black tracking-widest block">
+                    <span className="py-0.5 px-2 bg-black border border-[#444444] text-gray-400 text-[9px] uppercase font-bold tracking-widest block font-sans">
                       {item.company}
                     </span>
                   )}
@@ -409,12 +409,12 @@ function ElementRow({
           </div>
           <div className="flex items-center gap-2 mt-1">
             {template ? (
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-widest bg-slate-100 dark:bg-slate-800 px-2 py-0.5 border border-slate-200 dark:border-slate-700">
-                Xadd: {template.name}
+              <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest bg-transparent p-0 flex items-center font-display gap-2">
+                <span className="text-[#c5b358]">♦</span> XADD: {template.name}
               </span>
             ) : (
-              <span className="text-[10px] text-amber-600 dark:text-amber-500 uppercase font-bold tracking-widest bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 border border-amber-200 dark:border-amber-900/50">
-                Uncategorized
+              <span className="text-[10px] text-gray-600 uppercase font-bold tracking-widest bg-transparent p-0 flex items-center font-display gap-2">
+                <span className="text-gray-700">♦</span> UNCATEGORIZED
               </span>
             )}
           </div>
@@ -422,9 +422,9 @@ function ElementRow({
 
         <div className="flex items-center gap-3 shrink-0 flex-wrap mt-2 md:mt-0">
           {template && Object.keys(item.ratings).length > 0 && !isEditing && (
-            <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 font-bold bg-white dark:bg-slate-900 px-3 py-1.5 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-              {calculateAvg().toFixed(1)} <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-widest mt-0.5">/ 20</span>
+            <div className="flex items-center gap-2 text-[#e0e0d1] font-display tracking-widest bg-black px-3 py-1.5 border border-[#444444]">
+              <Star className="w-4 h-4 fill-[#c5b358] text-[#c5b358]" />
+              {calculateAvg().toFixed(1)} <span className="text-[10px] text-gray-500 uppercase mt-0.5">/ 20</span>
             </div>
           )}
 
@@ -434,14 +434,14 @@ function ElementRow({
                 setLocalRatings(item.ratings);
                 setEditingId(item.id);
               }}
-              className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-sm flex-1 sm:flex-none text-center"
+              className="px-4 py-2 border border-[#444444] bg-transparent text-gray-300 font-display tracking-widest uppercase text-sm hover:border-[#c5b358] hover:text-[#c5b358] transition-colors flex-1 sm:flex-none text-center"
             >
               Configure
             </button>
           ) : (
             <button
               onClick={() => setEditingId(null)}
-              className="text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold transition-colors flex items-center justify-center border border-slate-200 dark:border-slate-800 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 flex-1 sm:flex-none text-center"
+              className="px-4 py-2 text-gray-400 hover:text-white font-display uppercase tracking-widest transition-colors flex items-center justify-center border border-[#444444] hover:bg-[#333] flex-1 sm:flex-none text-center text-sm"
             >
               Cancel
             </button>
@@ -449,8 +449,8 @@ function ElementRow({
 
           <button
             onClick={() => deleteElement(item.id)}
-            className="text-slate-400 hover:text-white p-2 hover:bg-red-500 transition-colors border border-transparent hover:border-red-600 shrink-0"
-            title="Delete Element"
+            className="text-gray-600 hover:text-red-500 p-2 border border-transparent hover:border-red-900 hover:bg-black transition-colors shrink-0"
+            title="Delete Discovery"
           >
             <Trash2 className="w-5 h-5" />
           </button>
@@ -458,23 +458,23 @@ function ElementRow({
       </div>
 
       {isEditing && (
-        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+        <div className="mt-6 pt-6 border-t border-[#333]">
           <div className="mb-6">
-            <label className="block text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mb-3">
-              Assign Xadd (Category)
+            <label className="block text-xs font-bold uppercase text-gray-500 tracking-widest mb-3 font-display">
+              Assign XADD (Category Tome)
             </label>
             {templates.length === 0 ? (
-              <p className="text-sm font-medium text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 p-3">No xadd templates exist. Create one in the Customization tab first!</p>
+              <p className="text-sm font-medium text-red-500 bg-red-950/20 border border-red-900 p-3 font-display tracking-widest">No tomes discovered. Visit the Templates tab first!</p>
             ) : (
               <select
-                className="w-full max-w-sm px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-indigo-500"
+                className="w-full max-w-sm px-4 py-2 bg-black border border-[#444444] text-[#e0e0d1] font-display tracking-widest focus:outline-none focus:border-[#c5b358] uppercase"
                 value={item.templateId || ''}
                 onChange={(e) => {
                   updateElementTemplate(item.id, e.target.value);
                   setLocalRatings({});
                 }}
               >
-                <option value="" disabled>Select a template...</option>
+                <option value="" disabled>SELECT A TOME...</option>
                 {templates.map(t => (
                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
@@ -483,40 +483,54 @@ function ElementRow({
           </div>
 
           {template && (
-            <div className="space-y-6 bg-slate-50 dark:bg-slate-950 p-6 border border-slate-200 dark:border-slate-800">
-              <h4 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-6">
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" /> Rate Criteria
+            <div className="space-y-6 bg-black/50 p-6 border border-[#444444] relative">
+              
+              {/* Decorative Corners */}
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#c5b358]"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#c5b358]"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#c5b358]"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#c5b358]"></div>
+
+              <h4 className="text-lg font-display uppercase tracking-[0.2em] text-[#e0e0d1] flex items-center gap-2 mb-8 justify-center">
+                <span className="text-[#444] mr-2">♦</span> Rate Attributes <span className="text-[#444] ml-2">♦</span>
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                 {template.criteria.map((c) => {
                   const val = localRatings[c] !== undefined ? localRatings[c] : 0;
                   return (
                     <div key={c} className="space-y-3">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="font-bold text-slate-700 dark:text-slate-300 capitalize">{c}</span>
-                        <div className={`flex items-center gap-1 font-mono font-bold ${val < 0 ? 'text-red-500' : 'text-indigo-600 dark:text-indigo-400'}`}>
-                          {val} / 20
+                      <div className="flex justify-between items-end text-sm">
+                        <span className="font-display tracking-[0.1em] text-[#c5b358] uppercase text-xs">{c}</span>
+                        <div className={`flex items-center gap-1 font-display tracking-widest ${val < 0 ? 'text-red-400' : 'text-gray-300'}`}>
+                          {val} <span className="text-[#444] text-[10px]">/ 20</span>
                         </div>
                       </div>
-                      <input
-                        type="range"
-                        min="-20"
-                        max="20"
-                        step="1"
-                        value={val}
-                        onChange={(e) => handleRatingChange(c, parseInt(e.target.value))}
-                        className="w-full h-2 bg-slate-200 dark:bg-slate-700 appearance-none cursor-pointer accent-indigo-600 focus:outline-none rounded-full"
-                      />
+                      <div className="relative">
+                        <input
+                          type="range"
+                          min="-20"
+                          max="20"
+                          step="1"
+                          value={val}
+                          onChange={(e) => handleRatingChange(c, parseInt(e.target.value))}
+                          className="w-full h-1 bg-[#333] appearance-none cursor-pointer focus:outline-none"
+                          style={{
+                            backgroundImage: 'linear-gradient(#c5b358, #c5b358)',
+                            backgroundSize: `${((val + 20) / 40) * 100}% 100%`,
+                            backgroundRepeat: 'no-repeat'
+                          }}
+                        />
+                      </div>
                     </div>
                   );
                 })}
               </div>
-              <div className="pt-6 mt-6 border-t border-slate-200 dark:border-slate-800">
+              <div className="pt-8 mt-8 border-t border-[#333] flex justify-center">
                 <button
                   onClick={saveRatings}
-                  className="w-full px-6 py-4 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 font-black tracking-widest uppercase shadow-md shadow-indigo-200/50 dark:shadow-none"
+                  className="px-8 py-3 bg-transparent border border-[#444444] text-[#c5b358] hover:border-[#c5b358] hover:bg-black transition-colors flex items-center justify-center gap-3 font-display tracking-[0.2em] text-sm uppercase"
                 >
-                  <Save className="w-5 h-5" /> Save Ratings
+                  <Save className="w-4 h-4" /> Seal Attributes
                 </button>
               </div>
             </div>

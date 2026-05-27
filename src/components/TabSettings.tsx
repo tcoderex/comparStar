@@ -121,27 +121,27 @@ export function TabSettings({ store }: { store: any }) {
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex gap-4 border-b border-[#444444] mb-8 font-display">
         <button
           onClick={() => setActiveTab('sync')}
-          className={`px-4 py-3 font-bold border-b-2 transition-colors ${
-            activeTab === 'sync' ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+          className={`px-4 py-3 font-bold border-b-2 transition-colors uppercase tracking-widest ${
+            activeTab === 'sync' ? 'border-[#c5b358] text-white drop-shadow-[0_0_8px_rgba(197,179,88,0.8)]' : 'border-transparent text-gray-500 hover:text-gray-300'
           }`}
         >
           Account & Sync
         </button>
         <button
           onClick={() => setActiveTab('manage')}
-          className={`px-4 py-3 font-bold border-b-2 transition-colors ${
-            activeTab === 'manage' ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+          className={`px-4 py-3 font-bold border-b-2 transition-colors uppercase tracking-widest ${
+            activeTab === 'manage' ? 'border-[#c5b358] text-white drop-shadow-[0_0_8px_rgba(197,179,88,0.8)]' : 'border-transparent text-gray-500 hover:text-gray-300'
           }`}
         >
           Data Manager
         </button>
         <button
           onClick={() => setActiveTab('presets')}
-          className={`px-4 py-3 font-bold border-b-2 transition-colors ${
-            activeTab === 'presets' ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+          className={`px-4 py-3 font-bold border-b-2 transition-colors uppercase tracking-widest ${
+            activeTab === 'presets' ? 'border-[#c5b358] text-white drop-shadow-[0_0_8px_rgba(197,179,88,0.8)]' : 'border-transparent text-gray-500 hover:text-gray-300'
           }`}
         >
           Quick Presets
@@ -150,100 +150,86 @@ export function TabSettings({ store }: { store: any }) {
 
       {activeTab === 'sync' && (
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="bg-black/60 p-6 border border-[#444444] shadow-sm space-y-6">
+            <div className="flex items-center gap-4 border-b border-[#333] pb-6">
+              <div 
+                className="w-16 h-16 border border-[#c5b358] flex items-center justify-center overflow-hidden shrink-0"
+                style={{ transform: 'rotate(45deg)' }}
+              >
                 {store.user?.photoURL ? (
-                  <img src={store.user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                  <img src={store.user.photoURL} alt="Profile" className="w-full h-full object-cover scale-150" style={{ transform: 'rotate(-45deg)' }} />
                 ) : (
-                  <Shield className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                  <Shield className="w-8 h-8 text-[#c5b358]" style={{ transform: 'rotate(-45deg)' }} />
                 )}
               </div>
-              <div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white">
-                  {store.user ? store.user.displayName : 'Guest User'}
+              <div className="ml-4">
+                <h3 className="text-xl font-display tracking-widest text-[#e0e0d1] uppercase">
+                  {store.user ? store.user.displayName : 'Wanderer'}
                 </h3>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-sm font-medium text-gray-500">
                   {store.user ? store.user.email : 'Using local offline storage'}
                 </p>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-slate-100 flex flex-col items-start gap-4 dark:border-slate-800">
-              <h4 className="text-xs font-black uppercase text-slate-500 tracking-widest mb-2 dark:text-slate-400">Appearance</h4>
-              <div className="flex bg-slate-100 p-1 rounded-sm border border-slate-200 dark:bg-slate-800 dark:border-slate-700 w-full sm:w-auto">
-                {(['system', 'light', 'dark'] as const).map(t => (
-                  <button
-                    key={t}
-                    onClick={() => store.setTheme(t)}
-                    className={`flex items-center justify-center gap-2 flex-1 sm:flex-none px-6 py-2.5 text-sm font-bold uppercase tracking-widest transition-all ${
-                      store.state.theme === t 
-                        ? 'bg-white shadow-sm text-indigo-600 dark:bg-slate-700 dark:text-indigo-400' 
-                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                    }`}
-                  >
-                    {t === 'light' && <Sun className="w-4 h-4" />}
-                    {t === 'dark' && <Moon className="w-4 h-4" />}
-                    {t === 'system' && <Monitor className="w-4 h-4" />}
-                    <span className="hidden sm:inline">{t}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-slate-100 flex flex-col items-start gap-4 dark:border-slate-800">
-              <h4 className="text-xs font-black uppercase text-slate-500 tracking-widest mb-2 dark:text-slate-400">Account</h4>
+            <div className="pt-6 border-b border-[#333] pb-6 flex flex-col items-start gap-4">
+              <h4 className="text-xs font-black uppercase text-gray-500 tracking-widest mb-2 font-display">Realm Details</h4>
               {!store.user ? (
                 <div className="space-y-6 w-full max-w-xl">
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300 max-w-md">
-                    You are currently using Star Compare offline. Your data is saved locally to this device. Register to safely sync elements and templates to the cloud.
+                  <p className="text-sm font-medium text-gray-400 max-w-md">
+                    You are currently using Star Compare offline. Your findings are saved strictly to this device. Register to safely sync elements to the global realm.
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={signInWithGoogle}
-                      className="px-6 py-3 bg-indigo-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition shadow-sm shadow-indigo-200 dark:shadow-none text-sm"
+                      className="px-6 py-3 border border-[#444444] text-[#c5b358] font-bold flex items-center justify-center gap-2 hover:bg-[#c5b358] hover:text-black transition text-sm uppercase tracking-widest font-display"
                     >
                       <LogIn className="w-5 h-5" /> Sign In (Popup)
                     </button>
                     
                     <button
                       onClick={signInWithGoogleRedirect}
-                      className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-sm"
+                      className="px-6 py-3 border border-[#444444] text-gray-400 font-bold flex items-center justify-center gap-2 hover:border-gray-200 hover:text-white transition text-sm uppercase tracking-widest font-display"
                     >
-                      <LogIn className="w-5 h-5" /> Sign In (Redirect fallback)
+                      <LogIn className="w-5 h-5" /> Sign In (Redirect)
                     </button>
                   </div>
 
-                  <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 p-4 rounded text-xs text-amber-800 dark:text-amber-400 space-y-2 max-w-lg">
-                    <div className="flex items-center gap-2 font-bold uppercase tracking-wider">
-                      <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                  <div className="border border-red-900/40 p-4 bg-red-950/20 text-xs text-red-400 space-y-2 max-w-lg">
+                    <div className="flex items-center gap-2 font-bold uppercase tracking-wider font-display text-[#c5b358]">
+                      <AlertTriangle className="w-4 h-4" />
                       Vercel Authentication Guide
                     </div>
                     <p className="font-medium leading-relaxed">
-                      If you're hosting this app on custom domains like <span className="underline font-bold">comparstar.vercel.app</span>, please make sure you configured Firebase:
+                      If you're hosting this quest on <span className="underline font-bold text-gray-300">comparstar.vercel.app</span>, please ensure the Firebase realm is aligned:
                     </p>
                     <ol className="list-decimal pl-5 space-y-1 font-medium leading-relaxed">
-                      <li>Open the <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-700 font-bold">Firebase Console</a>.</li>
+                      <li>Open the <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline font-bold text-gray-300">Firebase Console</a>.</li>
                       <li>Go to <strong>Authentication</strong> &gt; <strong>Settings</strong> &gt; <strong>Authorized domains</strong>.</li>
-                      <li>Click <strong>Add domain</strong> and enter <code className="bg-amber-100/50 dark:bg-amber-900/40 px-1 py-0.5 rounded font-mono">comparstar.vercel.app</code>.</li>
-                      <li>If popups get blocked by your browser, use the <strong>Redirect fallback</strong> button above!</li>
+                      <li>Click <strong>Add domain</strong> and enter <code className="bg-black/50 px-1 py-0.5 font-mono text-gray-300">comparstar.vercel.app</code>.</li>
+                      <li>If enchantments block the popup, use the <strong>Redirect</strong> sign in above.</li>
                     </ol>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300 max-w-md">
-                    Your data is being safely synced to your account in real time with project: <strong className="text-indigo-600 dark:text-indigo-400 font-mono">tcoderex</strong>
+                  <p className="text-sm font-medium text-gray-400 max-w-md">
+                    Your discoveries are being safely recorded in real time with project: <strong className="text-[#c5b358] font-mono tracking-wider">tcoderex</strong>
                   </p>
                   <button
                     onClick={signOut}
-                    className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition border border-slate-300 dark:border-slate-700"
+                    className="px-6 py-3 border border-[#444444] text-[#c5b358] font-bold flex items-center gap-2 hover:bg-[#444444] hover:text-white transition uppercase tracking-widest font-display"
                   >
                     <LogOut className="w-5 h-5" /> Sign Out
                   </button>
                 </div>
               )}
+            </div>
+            
+            <div className="pt-2 flex flex-col items-start gap-4">
+              <h4 className="text-xs font-black uppercase text-gray-500 tracking-widest mb-2 font-display">Appearance (Disabled for Skyrim Theme)</h4>
+              <p className="text-sm text-gray-600 italic">The current theme is locked to Skyrim UI.</p>
             </div>
           </div>
         </div>

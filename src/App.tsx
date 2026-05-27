@@ -25,85 +25,91 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 font-sans flex flex-col overflow-hidden selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100">
+    <div className="font-sans flex flex-col h-screen overflow-hidden text-[#e0e0d1] selection:bg-[#c5b358] selection:text-black">
       
-      {/* Top Navigation */}
-      <nav className="h-16 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 sm:px-8 justify-between z-10 shrink-0 shadow-sm relative">
+      {/* Top Navigation (Skyrim Top Bar Style) */}
+      <nav className="h-16 bg-black/80 border-b border-[#444444] font-display uppercase tracking-widest flex items-center px-4 sm:px-8 justify-between z-10 shrink-0 shadow-lg relative">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-indigo-600 flex items-center justify-center rounded-sm shrink-0 shadow-sm shadow-indigo-200">
-            <Star className="w-5 h-5 text-white fill-white" />
+          <div className="w-8 h-8 border border-[#c5b358] flex items-center justify-center shrink-0" style={{ transform: 'rotate(45deg)' }}>
+            <div style={{ transform: 'rotate(-45deg)' }}>
+              <Star className="w-4 h-4 text-[#c5b358] fill-transparent" />
+            </div>
           </div>
-          <span className="font-black tracking-tight text-xl hidden lg:inline-block">COMPARSTAR</span>
+          <span className="font-bold tracking-widest text-lg hidden lg:inline-block text-[#e0e0d1]">COMPARSTAR</span>
         </div>
         
         <div className="flex flex-1 justify-center sm:max-w-xl md:max-w-3xl mx-auto h-full overflow-x-auto no-scrollbar absolute left-12 right-12 sm:static sm:left-auto sm:right-auto">
-          <div className="flex h-full w-max sm:w-full justify-start sm:justify-center sm:gap-2 no-scrollbar pl-4 sm:pl-0 pr-4 sm:pr-0">
+          <div className="flex h-full w-max sm:w-full justify-start sm:justify-center sm:gap-2 no-scrollbar pl-4 sm:pl-0 pr-4 sm:pr-0 items-center">
             <button
               onClick={() => setActiveTab('elements')}
-              className={`px-3 sm:px-6 h-full flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2 border-b-2 text-xs sm:text-sm transition-all whitespace-nowrap ${
+              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'elements'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50/50 dark:bg-indigo-900/20'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 font-bold hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              <LayoutGrid className="w-4 h-4 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Elements</span>
-              <span className="sm:hidden text-[10px]">Elements</span>
+              {activeTab === 'elements' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
+              <span>Elements</span>
+              {activeTab === 'elements' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
+            <span className="text-gray-700 text-xs hidden sm:inline">|</span>
             
             <button
               onClick={() => setActiveTab('compare')}
-              className={`px-3 sm:px-6 h-full flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2 border-b-2 text-xs sm:text-sm transition-all whitespace-nowrap ${
+              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'compare'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50/50 dark:bg-indigo-900/20'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 font-bold hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              <GitCompare className="w-4 h-4 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Compare</span>
-              <span className="sm:hidden text-[10px]">Compare</span>
+              {activeTab === 'compare' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
+              <span>Compare</span>
+              {activeTab === 'compare' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
+            <span className="text-gray-700 text-xs hidden sm:inline">|</span>
             
             <button
               onClick={() => setActiveTab('templates')}
-              className={`px-3 sm:px-6 h-full flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2 border-b-2 text-xs sm:text-sm transition-all whitespace-nowrap ${
+              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'templates'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50/50 dark:bg-indigo-900/20'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 font-bold hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              <Layers className="w-4 h-4 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Templates</span>
-              <span className="sm:hidden text-[10px]">Templates</span>
+              {activeTab === 'templates' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
+              <span>Templates</span>
+              {activeTab === 'templates' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
+            <span className="text-gray-700 text-xs hidden sm:inline">|</span>
 
             <button
               onClick={() => setActiveTab('settings')}
-              className={`px-3 sm:px-6 h-full flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2 border-b-2 text-xs sm:text-sm transition-all whitespace-nowrap ${
+              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'settings'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50/50 dark:bg-indigo-900/20'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 font-bold hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              <Settings className="w-4 h-4 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Settings</span>
-              <span className="sm:hidden text-[10px]">Settings</span>
+              {activeTab === 'settings' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
+              <span>Settings</span>
+              {activeTab === 'settings' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0 justify-end z-10 bg-white dark:bg-slate-950">
+        <div className="flex items-center gap-3 shrink-0 justify-end z-10">
           {store.user ? (
             <div className="flex items-center gap-2">
               <div 
-                className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer shadow-sm hover:ring-2 hover:ring-indigo-500 transition-all opacity-100" 
+                className="w-8 h-8 rounded-none border border-[#444444] cursor-pointer hover:border-[#c5b358] transition-all opacity-100 flex items-center justify-center"
+                style={{ transform: 'rotate(45deg)' }}
                 title={store.user.email || 'Profile'}
                 onClick={() => setActiveTab('settings')}
               >
                 {store.user.photoURL ? (
-                  <img src={store.user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                  <img src={store.user.photoURL} alt="Profile" className="w-full h-full object-cover scale-150" style={{ transform: 'rotate(-45deg)' }} />
                 ) : (
-                   <div className="w-full h-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                   <div className="w-full h-full flex items-center justify-center text-[#c5b358] font-bold text-xs" style={{ transform: 'rotate(-45deg)' }}>
                      {store.user.displayName?.[0] || store.user.email?.[0] || 'U'}
                    </div>
                 )}
@@ -111,11 +117,12 @@ export default function App() {
             </div>
           ) : (
             <div 
-                className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer shadow-sm hover:ring-2 hover:ring-indigo-500 transition-all bg-slate-100 dark:bg-slate-800 flex items-center justify-center" 
+                className="w-8 h-8 rounded-none border border-[#444444] cursor-pointer hover:border-[#c5b358] transition-all bg-black flex items-center justify-center"
+                style={{ transform: 'rotate(45deg)' }} 
                 title="Sign In / Settings"
                 onClick={() => setActiveTab('settings')}
               >
-               <User className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+               <User className="w-4 h-4 text-[#444444]" style={{ transform: 'rotate(-45deg)' }} />
             </div>
           )}
         </div>

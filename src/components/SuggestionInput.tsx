@@ -41,12 +41,12 @@ export function SuggestionInput({ value, onChange, suggestions, placeholder, cla
         onFocus={() => setShowSuggestions(true)}
       />
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-black border border-[#c5b358] shadow-[0_0_15px_rgba(197,179,88,0.2)] max-h-48 overflow-y-auto">
           {filteredSuggestions.map((s, i) => (
             <button
               key={i}
               type="button"
-              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="w-full text-left px-4 py-2 text-sm text-[#e0e0d1] font-display uppercase tracking-widest hover:bg-[#c5b358] hover:text-black transition-colors"
               onClick={() => {
                 onChange(s);
                 setShowSuggestions(false);

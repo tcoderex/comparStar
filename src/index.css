@@ -1,16 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Oswald', ui-sans-serif, system-ui, sans-serif;
+  --color-skyrim-bg: #111111;
+  --color-skyrim-text: #e0e0d1;
+  --color-skyrim-gold: #c5b358;
+  --color-skyrim-border: #444444;
 }
 
 body {
   font-family: var(--font-sans);
+  background-color: var(--color-skyrim-bg);
+  color: var(--color-skyrim-text);
+  /* Immersive dark radial gradient with a tiny bit of base64 noise texture */
+  background-image: 
+    radial-gradient(ellipse at center, rgba(30, 30, 30, 0.8) 0%, rgba(10, 10, 10, 1) 100%),
+    url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDMiLz4KPHBhdGggZD0iTTAgMEwyIDJNMCA0TDIgMk00IDBMMiAyTTQgNEwyIDIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=');
+  min-height: 100vh;
 }
 
-h1, h2, h3, h4, h5, h6, .font-display {
+h1, h2, h3, h4, h5, h6, .font-display, .nav-item {
   font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Custom scrollbar to match the theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.5); 
+}
+::-webkit-scrollbar-thumb {
+  background: #555; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c5b358; 
 }
