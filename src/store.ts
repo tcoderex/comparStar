@@ -173,12 +173,13 @@ export function useAppStore() {
       const docRef = doc(db, 'users', user.uid, 'templates', id);
       try {
         await deleteDoc(docRef);
-        state.elements.forEach(async (el) => {
+        const elements = state.elements;
+        for (const el of elements) {
           if (el.templateId === id) {
             const elRef = doc(db, 'users', user.uid, 'elements', el.id);
             await updateDoc(elRef, { templateId: '', ratings: {} });
           }
-        });
+        }
       } catch (e: any) {
         handleFirestoreError(e, 'delete', docRef.path);
       }

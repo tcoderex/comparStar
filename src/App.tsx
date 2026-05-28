@@ -1,24 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from './store';
 import { TabElements } from './components/TabElements';
 import { TabTemplates } from './components/TabTemplates';
 import { TabCompare } from './components/TabCompare';
 import { TabSettings } from './components/TabSettings';
 import { LayoutGrid, Layers, GitCompare, Star, LogOut, LogIn, Settings, User } from 'lucide-react';
-import { signInWithGoogle, signOut } from './firebase';
+import { signOut } from './firebase';
+import TitleBar from './components/TitleBar';
 
 type Tab = 'elements' | 'compare' | 'templates' | 'settings';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('elements');
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    return (localStorage.getItem('activeTab') as Tab) || 'elements';
+  });
   const store = useAppStore();
+
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
 
   if (store.loading && store.user && store.state.templates.length === 0 && store.state.elements.length === 0) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-xs font-black uppercase tracking-widest text-slate-500 animate-pulse">Syncing Data...</p>
+      <div className="font-sans flex flex-col h-screen overflow-hidden bg-[#111111] text-[#e0e0d1]">
+        <TitleBar />
+        <div className="flex-1 flex items-center justify-center flex-col gap-6">
+          <div className="w-8 h-8 border border-[#c5b358] flex items-center justify-center animate-pulse" style={{ transform: 'rotate(45deg)' }}>
+            <div style={{ transform: 'rotate(-45deg)' }}>
+              <span className="text-[#c5b358] text-base font-black">C</span>
+            </div>
+          </div>
+          <p className="text-[10px] font-display font-black uppercase tracking-[0.2em] text-[#c5b358] animate-pulse">Loading...</p>
         </div>
       </div>
     );
@@ -26,25 +38,18 @@ export default function App() {
 
   return (
     <div className="font-sans flex flex-col h-screen overflow-hidden text-[#e0e0d1] selection:bg-[#c5b358] selection:text-black">
-      
+
+      <TitleBar />
+
       {/* Top Navigation (Skyrim Top Bar Style) */}
-      <nav className="h-16 bg-black/80 border-b border-[#444444] font-display uppercase tracking-widest flex items-center px-4 sm:px-8 justify-between z-10 shrink-0 shadow-lg relative">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border border-[#c5b358] flex items-center justify-center shrink-0" style={{ transform: 'rotate(45deg)' }}>
-            <div style={{ transform: 'rotate(-45deg)' }}>
-              <Star className="w-4 h-4 text-[#c5b358] fill-transparent" />
-            </div>
-          </div>
-          <span className="font-bold tracking-widest text-lg hidden lg:inline-block text-[#e0e0d1]">COMPARSTAR</span>
-        </div>
-        
-        <div className="flex flex-1 justify-center sm:max-w-xl md:max-w-3xl mx-auto h-full overflow-x-auto no-scrollbar absolute left-12 right-12 sm:static sm:left-auto sm:right-auto">
-          <div className="flex h-full w-max sm:w-full justify-start sm:justify-center sm:gap-2 no-scrollbar pl-4 sm:pl-0 pr-4 sm:pr-0 items-center">
+      <nav className="h-12 bg-black/70 border-b border-[#444444] font-display uppercase tracking-widest flex items-center px-4 justify-between z-10 shrink-0 shadow-lg">
+        <div className="flex flex-1 justify-center h-full">
+          <div className="flex h-full items-center gap-1">
             <button
               onClick={() => setActiveTab('elements')}
-              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
+              className={`px-3 h-8 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'elements'
-                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] bg-white/5'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
             >
@@ -52,13 +57,13 @@ export default function App() {
               <span>Elements</span>
               {activeTab === 'elements' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
-            <span className="text-gray-700 text-xs hidden sm:inline">|</span>
-            
+            <span className="text-gray-700 text-xs">|</span>
+
             <button
               onClick={() => setActiveTab('compare')}
-              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
+              className={`px-3 h-8 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'compare'
-                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] bg-white/5'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
             >
@@ -66,13 +71,13 @@ export default function App() {
               <span>Compare</span>
               {activeTab === 'compare' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
-            <span className="text-gray-700 text-xs hidden sm:inline">|</span>
-            
+            <span className="text-gray-700 text-xs">|</span>
+
             <button
               onClick={() => setActiveTab('templates')}
-              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
+              className={`px-3 h-8 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'templates'
-                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] bg-white/5'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
             >
@@ -80,13 +85,13 @@ export default function App() {
               <span>Templates</span>
               {activeTab === 'templates' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
-            <span className="text-gray-700 text-xs hidden sm:inline">|</span>
+            <span className="text-gray-700 text-xs">|</span>
 
             <button
               onClick={() => setActiveTab('settings')}
-              className={`px-3 sm:px-4 h-10 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
+              className={`px-3 h-8 flex items-center justify-center gap-2 text-xs transition-all whitespace-nowrap nav-item ${
                 activeTab === 'settings'
-                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                  ? 'text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] bg-white/5'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
             >
@@ -95,36 +100,6 @@ export default function App() {
               {activeTab === 'settings' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0 justify-end z-10">
-          {store.user ? (
-            <div className="flex items-center gap-2">
-              <div 
-                className="w-8 h-8 rounded-none border border-[#444444] cursor-pointer hover:border-[#c5b358] transition-all opacity-100 flex items-center justify-center"
-                style={{ transform: 'rotate(45deg)' }}
-                title={store.user.email || 'Profile'}
-                onClick={() => setActiveTab('settings')}
-              >
-                {store.user.photoURL ? (
-                  <img src={store.user.photoURL} alt="Profile" className="w-full h-full object-cover scale-150" style={{ transform: 'rotate(-45deg)' }} />
-                ) : (
-                   <div className="w-full h-full flex items-center justify-center text-[#c5b358] font-bold text-xs" style={{ transform: 'rotate(-45deg)' }}>
-                     {store.user.displayName?.[0] || store.user.email?.[0] || 'U'}
-                   </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div 
-                className="w-8 h-8 rounded-none border border-[#444444] cursor-pointer hover:border-[#c5b358] transition-all bg-black flex items-center justify-center"
-                style={{ transform: 'rotate(45deg)' }} 
-                title="Sign In / Settings"
-                onClick={() => setActiveTab('settings')}
-              >
-               <User className="w-4 h-4 text-[#444444]" style={{ transform: 'rotate(-45deg)' }} />
-            </div>
-          )}
         </div>
       </nav>
 

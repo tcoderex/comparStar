@@ -27,6 +27,17 @@ h1, h2, h3, h4, h5, h6, .font-display, .nav-item {
   letter-spacing: 0.05em;
 }
 
+.app-drag-region {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.app-drag-region button,
+.app-drag-region [role="button"] {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
 /* Custom scrollbar to match the theme */
 ::-webkit-scrollbar {
   width: 8px;

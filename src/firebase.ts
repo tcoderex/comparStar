@@ -1,12 +1,11 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut as fbSignOut, browserLocalPersistence, setPersistence } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer, enableIndexedDbPersistence } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 
-// Enable offline persistence for Firestore
 enableIndexedDbPersistence(db).catch((err) => {
   if (err.code === 'failed-precondition') {
     console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
@@ -16,53 +15,66 @@ enableIndexedDbPersistence(db).catch((err) => {
 });
 
 export const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence).catch(console.warn);
 
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-// Customize provider prompts or scopes if needed
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
-
-export const signInWithGoogle = async () => {
+/**
+ * Sign in with Google Popup (works in both browser and Electron)
+ * In Electron: opens a modal auth window via IPC + signInWithRedirect
+ * In Browser: uses signInWithPopup directly
+ */
+export const signInWithGooglePopup = async () => {
   try {
-    // Attempt standard popup sign-in
-    await signInWithPopup(auth, googleProvider);
-  } catch (error: any) {
-    console.error('Error signing in with Google:', error);
-    
-    // Check if error is due to popup blocker or matching redirect constraints
-    const isPopupBlocked = 
-      error.code === 'auth/popup-blocked' || 
-      error.message?.includes('popup') || 
-      error.message?.includes('closed-by-user');
+    localStorage.setItem('activeTab', 'settings');
+    localStorage.removeItem('electron:auth:completed');
 
-    if (isPopupBlocked) {
-      console.warn('Popup blocked, retrying with redirect...');
-      alert('Your browser blocked the login popup. Redirecting you to Google logon instead...');
-      try {
-        await signInWithRedirect(auth, googleProvider);
-      } catch (redirectError: any) {
-        console.error('Error with redirect sign-in:', redirectError);
-        alert('Authentication failed: ' + (redirectError.message || redirectError));
+    if ((window as any).electronAPI?.signInWithGoogle) {
+      // Electron: use IPC to open auth window
+      localStorage.setItem('electron:auth:initiated', 'true');
+      const authPromise = (window as any).electronAPI.signInWithGoogle();
+      await signInWithRedirect(auth, googleProvider);
+      const result = await authPromise;
+      if (result?.success) {
+        window.location.reload();
       }
     } else {
-      alert(
-        'Login failed: ' + (error.message || 'Unknown error') + '\n\n' +
-        'If you are hosting on Vercel, please ensure:\n' +
-        '1. "comparstar.vercel.app" is added to your Firebase Auth -> Settings -> Authorized Domains.\n' +
-        '2. Try the "Sign in with redirect" option in Settings.'
-      );
+      // Browser: use popup directly
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result.user) {
+        localStorage.setItem('electron:auth:completed', Date.now().toString());
+        window.location.reload();
+      }
     }
+  } catch (error: any) {
+    alert('Sign in failed: ' + (error.message || error));
   }
 };
 
+/**
+ * Sign in with Google Redirect (works in both browser and Electron)
+ * In both environments: uses signInWithRedirect
+ */
 export const signInWithGoogleRedirect = async () => {
   try {
-    await signInWithRedirect(auth, googleProvider);
+    localStorage.setItem('activeTab', 'settings');
+    localStorage.removeItem('electron:auth:completed');
+
+    if ((window as any).electronAPI?.signInWithGoogle) {
+      // Electron: use IPC + redirect flow
+      const authPromise = (window as any).electronAPI.signInWithGoogle();
+      await signInWithRedirect(auth, googleProvider);
+      const result = await authPromise;
+      if (result?.success) {
+        window.location.reload();
+      }
+    } else {
+      // Browser: use redirect
+      await signInWithRedirect(auth, googleProvider);
+    }
   } catch (error: any) {
-    console.error('Redirect sign in error:', error);
-    alert('Redirect sign in failed: ' + error.message);
+    alert('Sign in failed: ' + (error.message || error));
   }
 };
 
@@ -70,14 +82,16 @@ export const signOut = async () => {
   await fbSignOut(auth);
 };
 
-// Validate connection
-async function testConnection() {
+export const handleRedirectResult = async () => {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if(error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration.");
+    const result = await getRedirectResult(auth);
+    console.log('[Auth] getRedirectResult:', result ? result.user?.email : 'null');
+    if (result?.user) {
+      localStorage.setItem('electron:auth:completed', Date.now().toString());
     }
+    return result?.user || null;
+  } catch (error) {
+    console.error('[Auth] getRedirectResult error:', error);
+    return null;
   }
-}
-testConnection();
+};

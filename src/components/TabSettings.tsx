@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { LogIn, LogOut, CheckSquare, Trash2, Shield, Moon, Sun, Monitor, AlertTriangle, Plus, Save, Sparkles, Hash, Edit2 } from 'lucide-react';
-import { signInWithGoogle, signInWithGoogleRedirect, signOut } from '../firebase';
+import { LogIn, LogOut, CheckSquare, Trash2, Shield, Moon, Sun, Monitor, AlertTriangle, Plus, Save, Sparkles, Hash, Edit2, Wifi, WifiOff } from 'lucide-react';
+import { signInWithGoogleRedirect, signOut } from '../firebase';
+import { db } from '../firebase';
+import { disableNetwork, enableNetwork } from 'firebase/firestore';
 
 export function TabSettings({ store }: { store: any }) {
   const [activeTab, setActiveTab] = useState<'sync' | 'manage' | 'presets'>('sync');
@@ -17,6 +19,7 @@ export function TabSettings({ store }: { store: any }) {
   const [editingPreset, setEditingPreset] = useState<{ type: 'suggestion' | 'category' | 'subcategory', oldVal: string, newVal: string } | null>(null);
 
   const [successMsg, setSuccessMsg] = useState<{ type: string, msg: string } | null>(null);
+  const [firestoreOnline, setFirestoreOnline] = useState(() => localStorage.getItem('fsOnline') !== 'false');
   
   useEffect(() => {
     if (successMsg) {
@@ -24,6 +27,12 @@ export function TabSettings({ store }: { store: any }) {
       return () => clearTimeout(timer);
     }
   }, [successMsg]);
+
+  useEffect(() => {
+    if (localStorage.getItem('fsOnline') === 'false') {
+      disableNetwork(db).catch(() => {});
+    }
+  }, []);
 
   const customSuggestions = store.state.customSuggestions || [];
   const customCategories = store.state.customCategories || [];
@@ -180,21 +189,12 @@ export function TabSettings({ store }: { store: any }) {
                     You are currently using Star Compare offline. Your findings are saved strictly to this device. Register to safely sync elements to the global realm.
                   </p>
                   
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      onClick={signInWithGoogle}
-                      className="px-6 py-3 border border-[#444444] text-[#c5b358] font-bold flex items-center justify-center gap-2 hover:bg-[#c5b358] hover:text-black transition text-sm uppercase tracking-widest font-display"
-                    >
-                      <LogIn className="w-5 h-5" /> Sign In (Popup)
-                    </button>
-                    
-                    <button
-                      onClick={signInWithGoogleRedirect}
-                      className="px-6 py-3 border border-[#444444] text-gray-400 font-bold flex items-center justify-center gap-2 hover:border-gray-200 hover:text-white transition text-sm uppercase tracking-widest font-display"
-                    >
-                      <LogIn className="w-5 h-5" /> Sign In (Redirect)
-                    </button>
-                  </div>
+                  <button
+                    onClick={signInWithGoogleRedirect}
+                    className="px-6 py-3 border border-[#444444] text-[#c5b358] font-bold flex items-center justify-center gap-2 hover:bg-[#c5b358] hover:text-black transition text-sm uppercase tracking-widest font-display"
+                  >
+                    <LogIn className="w-5 h-5" /> Sign In with Google
+                  </button>
 
                   <div className="border border-red-900/40 p-4 bg-red-950/20 text-xs text-red-400 space-y-2 max-w-lg">
                     <div className="flex items-center gap-2 font-bold uppercase tracking-wider font-display text-[#c5b358]">
@@ -228,8 +228,33 @@ export function TabSettings({ store }: { store: any }) {
             </div>
             
             <div className="pt-2 flex flex-col items-start gap-4">
-              <h4 className="text-xs font-black uppercase text-gray-500 tracking-widest mb-2 font-display">Appearance (Disabled for Skyrim Theme)</h4>
-              <p className="text-sm text-gray-600 italic">The current theme is locked to Skyrim UI.</p>
+              <h4 className="text-xs font-black uppercase text-gray-500 tracking-widest mb-2 font-display">Network State</h4>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={async () => {
+                    if (firestoreOnline) {
+                      await disableNetwork(db);
+                      setFirestoreOnline(false);
+                      localStorage.setItem('fsOnline', 'false');
+                    } else {
+                      await enableNetwork(db);
+                      setFirestoreOnline(true);
+                      localStorage.setItem('fsOnline', 'true');
+                    }
+                  }}
+                  className={`px-5 py-3 border font-bold flex items-center justify-center gap-2 transition text-sm uppercase tracking-widest font-display ${
+                    firestoreOnline
+                      ? 'border-emerald-700 text-emerald-400 bg-emerald-950/20 hover:bg-emerald-900/30'
+                      : 'border-red-800 text-red-400 bg-red-950/20 hover:bg-red-900/30'
+                  }`}
+                >
+                  {firestoreOnline ? <Wifi className="w-5 h-5" /> : <WifiOff className="w-5 h-5" />}
+                  {firestoreOnline ? 'ONLINE' : 'OFFLINE'}
+                </button>
+                <span className="text-xs font-medium text-gray-500">
+                  Toggle Firestore network. Offline mode uses only local IndexedDB cache.
+                </span>
+              </div>
             </div>
           </div>
         </div>
