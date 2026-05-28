@@ -4,8 +4,8 @@ import { TabElements } from './components/TabElements';
 import { TabTemplates } from './components/TabTemplates';
 import { TabCompare } from './components/TabCompare';
 import { TabSettings } from './components/TabSettings';
-import { LayoutGrid, Layers, GitCompare, Star, LogOut, LogIn, Settings, User } from 'lucide-react';
-import { signOut } from './firebase';
+import { LogOut, LogIn } from 'lucide-react';
+import { signOut, signInWithGoogleRedirect } from './firebase';
 import TitleBar from './components/TitleBar';
 
 type Tab = 'elements' | 'compare' | 'templates' | 'settings';
@@ -42,7 +42,7 @@ export default function App() {
       <TitleBar />
 
       {/* Top Navigation (Skyrim Top Bar Style) */}
-      <nav className="h-12 bg-black/70 border-b border-[#444444] font-display uppercase tracking-widest flex items-center px-4 justify-between z-10 shrink-0 shadow-lg">
+      <nav className="h-12 bg-black/70 border-b border-[#444444] font-display uppercase tracking-widest flex items-center px-4 z-10 shrink-0 shadow-lg">
         <div className="flex flex-1 justify-center h-full">
           <div className="flex h-full items-center gap-1">
             <button
@@ -100,6 +100,34 @@ export default function App() {
               {activeTab === 'settings' && <span className="text-[#c5b358] text-[8px] animate-pulse">♦</span>}
             </button>
           </div>
+        </div>
+
+        {/* Auth button — right side of nav */}
+        <div className="flex items-center shrink-0 ml-2">
+          {store.user ? (
+            <button
+              onClick={signOut}
+              title={`Sign out (${store.user.displayName || store.user.email})`}
+              className="flex items-center gap-2 px-3 h-8 text-[10px] text-gray-400 hover:text-[#c5b358] transition-colors border border-transparent hover:border-[#444444]"
+            >
+              {store.user.photoURL ? (
+                <img src={store.user.photoURL} alt="" className="w-5 h-5 rounded-full" />
+              ) : (
+                <span className="w-5 h-5 border border-[#c5b358] flex items-center justify-center text-[#c5b358] text-[8px] font-black">
+                  {(store.user.displayName || store.user.email || 'U')[0].toUpperCase()}
+                </span>
+              )}
+              <LogOut className="w-3 h-3" />
+            </button>
+          ) : (
+            <button
+              onClick={signInWithGoogleRedirect}
+              className="flex items-center gap-2 px-3 h-8 text-[10px] font-display tracking-widest text-[#c5b358] border border-[#c5b358]/40 hover:border-[#c5b358] hover:bg-[#c5b358]/10 transition-all"
+            >
+              <LogIn className="w-3 h-3" />
+              <span>Sign In</span>
+            </button>
+          )}
         </div>
       </nav>
 

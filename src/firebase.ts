@@ -53,14 +53,11 @@ export const signInWithGooglePopup = async () => {
 };
 
 /**
- * Sign in with Google Redirect (works in both browser and Electron)
- * In both environments: uses signInWithRedirect
+ * Sign in with Google — uses popup in browser, redirect flow in Electron.
+ * This is the canonical sign-in function for all environments.
  */
 export const signInWithGoogleRedirect = async () => {
   try {
-    localStorage.setItem('activeTab', 'settings');
-    localStorage.removeItem('electron:auth:completed');
-
     if ((window as any).electronAPI?.signInWithGoogle) {
       // Electron: use IPC + redirect flow
       const authPromise = (window as any).electronAPI.signInWithGoogle();
@@ -70,11 +67,13 @@ export const signInWithGoogleRedirect = async () => {
         window.location.reload();
       }
     } else {
-      // Browser: use redirect
-      await signInWithRedirect(auth, googleProvider);
+      // Browser: use popup — no page navigation, no reload loop
+      await signInWithPopup(auth, googleProvider);
     }
   } catch (error: any) {
-    alert('Sign in failed: ' + (error.message || error));
+    if ((error as any)?.code !== 'auth/popup-closed-by-user') {
+      alert('Sign in failed: ' + (error.message || error));
+    }
   }
 };
 
