@@ -81,7 +81,7 @@ The Firebase Auth handler redirects back to your `redirectUrl` using a form POST
 ### What you need in Firebase Console
 
 1. Go to **Authentication → Settings → Authorized domains**
-2. Add `localhost` (and any custom domains like `comparstar.vercel.app`)
+2. Add `localhost` (and any custom domains like `xcompar.vercel.app`)
 3. That's it — you don't need to touch the Google Cloud Console OAuth settings
 
 ## Key Files

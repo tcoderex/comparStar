@@ -1,5 +1,5 @@
 {
-  "name": "comparstar",
+  "name": "xcompar",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -15,8 +15,8 @@
     "electron:build": "vite build && electron-builder --win"
   },
   "build": {
-    "appId": "com.tcoderex.comparstar",
-    "productName": "ComparStar",
+    "appId": "com.tcoderex.xcompar",
+    "productName": "XCompar",
     "directories": {
       "output": "release"
     },

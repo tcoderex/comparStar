@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { LogIn, LogOut, CheckSquare, Trash2, Shield, Moon, Sun, Monitor, AlertTriangle, Plus, Save, Sparkles, Hash, Edit2, Wifi, WifiOff } from 'lucide-react';
+import { LogIn, LogOut, SquareCheck as CheckSquare, Trash2, Shield, Moon, Sun, Monitor, TriangleAlert as AlertTriangle, Plus, Save, Sparkles, Hash, CreditCard as Edit2, Wifi, WifiOff } from 'lucide-react';
 import { signInWithGoogleRedirect, signOut } from '../firebase';
 import { db } from '../firebase';
 import { disableNetwork, enableNetwork } from 'firebase/firestore';
@@ -202,12 +202,12 @@ export function TabSettings({ store }: { store: any }) {
                       Vercel Authentication Guide
                     </div>
                     <p className="font-medium leading-relaxed">
-                      If you're hosting this quest on <span className="underline font-bold text-gray-300">comparstar.vercel.app</span>, please ensure the Firebase realm is aligned:
+                      If you're hosting this quest on <span className="underline font-bold text-gray-300">xcompar.vercel.app</span>, please ensure the Firebase realm is aligned:
                     </p>
                     <ol className="list-decimal pl-5 space-y-1 font-medium leading-relaxed">
                       <li>Open the <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline font-bold text-gray-300">Firebase Console</a>.</li>
                       <li>Go to <strong>Authentication</strong> &gt; <strong>Settings</strong> &gt; <strong>Authorized domains</strong>.</li>
-                      <li>Click <strong>Add domain</strong> and enter <code className="bg-black/50 px-1 py-0.5 font-mono text-gray-300">comparstar.vercel.app</code>.</li>
+                      <li>Click <strong>Add domain</strong> and enter <code className="bg-black/50 px-1 py-0.5 font-mono text-gray-300">xcompar.vercel.app</code>.</li>
                       <li>If enchantments block the popup, use the <strong>Redirect</strong> sign in above.</li>
                     </ol>
                   </div>

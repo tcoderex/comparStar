@@ -1,6 +1,6 @@
 {
-  "name": "ComparStar",
-  "short_name": "ComparStar",
+  "name": "XCompar",
+  "short_name": "XCompar",
   "description": "Professional multi-criteria comparison and analysis tool.",
   "start_url": "/",
   "display": "standalone",

@@ -27,7 +27,7 @@ export default function App() {
         <div className="flex-1 flex items-center justify-center flex-col gap-6">
           <div className="w-8 h-8 border border-[#c5b358] flex items-center justify-center animate-pulse" style={{ transform: 'rotate(45deg)' }}>
             <div style={{ transform: 'rotate(-45deg)' }}>
-              <span className="text-[#c5b358] text-base font-black">C</span>
+              <span className="text-[#c5b358] text-base font-black">X</span>
             </div>
           </div>
           <p className="text-[10px] font-display font-black uppercase tracking-[0.2em] text-[#c5b358] animate-pulse">Loading...</p>

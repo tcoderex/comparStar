@@ -15,10 +15,10 @@ export default function TitleBar() {
       <div className="flex items-center gap-3 px-4 w-56 app-drag-region">
         <div className="w-5 h-5 border border-[#c5b358] flex items-center justify-center shrink-0" style={{ transform: 'rotate(45deg)' }}>
           <div style={{ transform: 'rotate(-45deg)' }}>
-            <span className="text-[#c5b358] text-xs font-black">C</span>
+            <span className="text-[#c5b358] text-xs font-black">X</span>
           </div>
         </div>
-        <span className="text-[#c5b358] text-xs font-display tracking-[0.15em]">COMPARSTAR</span>
+        <span className="text-[#c5b358] text-xs font-display tracking-[0.15em]">XCOMPAR</span>
       </div>
 
       <div className="flex-1 app-drag-region" />
